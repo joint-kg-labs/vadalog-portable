@@ -1,0 +1,15 @@
+% Datalog+/-: the head introduces a value that is known to exist but not known.
+% Each `manager` fact carries a marked null, written z1, z2, ...
+employee("Jack").
+contract("Jack").
+employee("Ruth").
+contract("Ruth").
+employee("Ann").
+hired("Ann","Ruth").
+
+manager(Z,X)         :- employee(X).
+hired(Y,X)           :- manager(Y,X), contract(X).
+contractSigned(X)    :- hired(Y,X), manager(Y,Z).
+
+@output("manager").
+@output("contractSigned").

@@ -1,0 +1,19 @@
+% Stratified aggregation: one fact per group, no intermediate results.
+sale("north", 100).
+sale("north", 250).
+sale("north",  50).
+sale("south", 300).
+sale("south", 120).
+
+total(R, T)   :- sale(R, V), T = sum(V).
+best(R, M)    :- sale(R, V), M = max(V).
+average(R, A) :- sale(R, V), A = avg(V).
+busy(R)       :- sale(R, V), N = count(V), N > 2.
+
+@output("total").
+@output("best").
+@output("average").
+@output("busy").
+@post("total","orderby(1)").
+@post("best","orderby(1)").
+@post("average","orderby(1)").

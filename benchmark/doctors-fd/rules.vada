@@ -1,0 +1,84 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "doctors-fd" scenario - dependencies
+% Transcribed from
+%   chasebench/scenarios/doctors-fd/dependencies/doctors-fd.st-tgds.txt
+%   chasebench/scenarios/doctors-fd/dependencies/doctors-fd.t-egds.txt
+%
+% doctors-fd is `doctors` with the two EGDs that relate targethospital to
+% doctor removed: what is left is functional dependencies on the target
+% relations alone, and nothing that can turn an invented hospital into a
+% constant. The source-to-target TGDs and the data are those of `doctors`,
+% unchanged, which is why this directory binds that scenario's CSVs instead of
+% carrying a second copy.
+%
+% Source schema (EDB):  hospital, medprescription, physician, treatment
+% Target schema (IDB):  doctor, prescription, targethospital
+% ---------------------------------------------------------------------------
+
+% --- source-to-target TGDs -------------------------------------------------
+% Existential head variables (Conf, Hospital) become marked nulls.
+
+% treatment(id,patient,hospital,npi,conf1), physician(npi,name,spec,conf2)
+%   -> prescription(id,patient,npi,C1)
+prescription(Id, Patient, Npi, Conf) :-
+    treatment(Id, Patient, Hospital, Npi, TConf),
+    physician(Npi, Name, Spec, PConf).
+
+% treatment(id,patient,hospital,npi,conf1), physician(npi,name,spec,conf2)
+%   -> doctor(npi,name,spec,hospital,C2)
+doctor(Npi, Name, Spec, Hospital, Conf) :-
+    treatment(Id, Patient, Hospital, Npi, TConf),
+    physician(Npi, Name, Spec, PConf).
+
+% medprescription(id,patient,npi,doctor,spec,conf) -> prescription(id,patient,npi,C1)
+prescription(Id, Patient, Npi, Conf) :-
+    medprescription(Id, Patient, Npi, Doc, Spec, MConf).
+
+% medprescription(id,patient,npi,doctor,spec,conf) -> doctor(npi,doctor,spec,H,C2)
+% Hospital and confidence are both unknown here: two marked nulls, and in this
+% scenario nothing ever resolves the hospital.
+doctor(Npi, Doc, Spec, Hospital, Conf) :-
+    medprescription(Id, Patient, Npi, Doc, Spec, MConf).
+
+% hospital(doctor,spec,hospital,npi,conf) -> targethospital(doctor,spec,hospital,npi,conf)
+targethospital(Doc, Spec, Hospital, Npi, HConf) :-
+    hospital(Doc, Spec, Hospital, Npi, HConf).
+
+% --- target EGDs -----------------------------------------------------------
+% prescription: the id is a key for (patient, npi, conf).
+
+Patient1 = Patient2 :-
+    prescription(Id, Patient1, Npi1, Conf1),
+    prescription(Id, Patient2, Npi2, Conf2).
+
+Npi1 = Npi2 :-
+    prescription(Id, Patient1, Npi1, Conf1),
+    prescription(Id, Patient2, Npi2, Conf2).
+
+Conf1 = Conf2 :-
+    prescription(Id, Patient1, Npi1, Conf1),
+    prescription(Id, Patient2, Npi2, Conf2).
+
+% doctor: the npi is a key for (doctor, spec, hospital) ...
+
+Doctor1 = Doctor2 :-
+    doctor(Npi, Doctor1, Spec1, Hospital1, Conf1),
+    doctor(Npi, Doctor2, Spec2, Hospital2, Conf2).
+
+Spec1 = Spec2 :-
+    doctor(Npi, Doctor1, Spec1, Hospital1, Conf1),
+    doctor(Npi, Doctor2, Spec2, Hospital2, Conf2).
+
+Hospital1 = Hospital2 :-
+    doctor(Npi, Doctor1, Spec1, Hospital1, Conf1),
+    doctor(Npi, Doctor2, Spec2, Hospital2, Conf2).
+
+% ... and, symmetrically, the doctor name is a key for (npi, conf).
+
+Npi1 = Npi2 :-
+    doctor(Npi1, Doctor, Spec1, Hospital1, Conf1),
+    doctor(Npi2, Doctor, Spec2, Hospital2, Conf2).
+
+Conf1 = Conf2 :-
+    doctor(Npi1, Doctor, Spec1, Hospital1, Conf1),
+    doctor(Npi2, Doctor, Spec2, Hospital2, Conf2).

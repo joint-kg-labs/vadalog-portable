@@ -1,0 +1,21 @@
+% Read a CSV, join it with facts declared inline, write the result back to CSV.
+% Run from this directory:  vadalog run csv_pipeline.vada
+@input("holding").
+@bind("holding", "csv useHeaders='true'", ".", "holdings.csv").
+@mapping("holding", 0, "parent", "string").
+@mapping("holding", 1, "child",  "string").
+@mapping("holding", 2, "share",  "double").
+
+sector("acme",   "manufacturing").
+sector("borealis","energy").
+
+exposure(Parent, Sector, Share) :- holding(Parent, Child, Share),
+                                   sector(Child, Sector),
+                                   Share > 0.1.
+
+@output("exposure").
+@bind("exposure", "csv useHeaders='true'", ".", "exposure.csv").
+@mapping("exposure", 0, "parent", "string").
+@mapping("exposure", 1, "sector", "string").
+@mapping("exposure", 2, "share",  "double").
+@post("exposure","orderby(1,2)").

@@ -1,0 +1,10 @@
+% Transitive closure: the smallest interesting recursive program.
+edge(1,2).
+edge(2,3).
+edge(3,4).
+
+path(X,Y) :- edge(X,Y).
+path(X,Z) :- edge(X,Y), path(Y,Z).
+
+@output("path").
+@post("path","orderby(1,2)").

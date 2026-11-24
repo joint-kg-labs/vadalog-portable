@@ -1,0 +1,65 @@
+% ChaseBench "LUBM" - source relations, the 001 instance (one university).
+% Every column is a SYMBOL, i.e. a string, so no @mapping is needed:
+% without one the CSV reader types every field as a string.
+% The CSV files carry no header row.
+
+@input("src_AssistantProfessor").
+@bind("src_AssistantProfessor", "csv", "data/001", "src_AssistantProfessor.csv").
+@input("src_AssociateProfessor").
+@bind("src_AssociateProfessor", "csv", "data/001", "src_AssociateProfessor.csv").
+@input("src_Course").
+@bind("src_Course", "csv", "data/001", "src_Course.csv").
+@input("src_Department").
+@bind("src_Department", "csv", "data/001", "src_Department.csv").
+@input("src_FullProfessor").
+@bind("src_FullProfessor", "csv", "data/001", "src_FullProfessor.csv").
+@input("src_GraduateCourse").
+@bind("src_GraduateCourse", "csv", "data/001", "src_GraduateCourse.csv").
+@input("src_GraduateStudent").
+@bind("src_GraduateStudent", "csv", "data/001", "src_GraduateStudent.csv").
+@input("src_Lecturer").
+@bind("src_Lecturer", "csv", "data/001", "src_Lecturer.csv").
+@input("src_Publication").
+@bind("src_Publication", "csv", "data/001", "src_Publication.csv").
+@input("src_ResearchAssistant").
+@bind("src_ResearchAssistant", "csv", "data/001", "src_ResearchAssistant.csv").
+@input("src_ResearchGroup").
+@bind("src_ResearchGroup", "csv", "data/001", "src_ResearchGroup.csv").
+@input("src_TeachingAssistant").
+@bind("src_TeachingAssistant", "csv", "data/001", "src_TeachingAssistant.csv").
+@input("src_UndergraduateStudent").
+@bind("src_UndergraduateStudent", "csv", "data/001", "src_UndergraduateStudent.csv").
+@input("src_University").
+@bind("src_University", "csv", "data/001", "src_University.csv").
+@input("src_advisor").
+@bind("src_advisor", "csv", "data/001", "src_advisor.csv").
+@input("src_doctoralDegreeFrom").
+@bind("src_doctoralDegreeFrom", "csv", "data/001", "src_doctoralDegreeFrom.csv").
+@input("src_emailAddress").
+@bind("src_emailAddress", "csv", "data/001", "src_emailAddress.csv").
+@input("src_headOf").
+@bind("src_headOf", "csv", "data/001", "src_headOf.csv").
+@input("src_mastersDegreeFrom").
+@bind("src_mastersDegreeFrom", "csv", "data/001", "src_mastersDegreeFrom.csv").
+@input("src_memberOf").
+@bind("src_memberOf", "csv", "data/001", "src_memberOf.csv").
+@input("src_name").
+@bind("src_name", "csv", "data/001", "src_name.csv").
+@input("src_publicationAuthor").
+@bind("src_publicationAuthor", "csv", "data/001", "src_publicationAuthor.csv").
+@input("src_researchInterest").
+@bind("src_researchInterest", "csv", "data/001", "src_researchInterest.csv").
+@input("src_subOrganizationOf").
+@bind("src_subOrganizationOf", "csv", "data/001", "src_subOrganizationOf.csv").
+@input("src_takesCourse").
+@bind("src_takesCourse", "csv", "data/001", "src_takesCourse.csv").
+@input("src_teacherOf").
+@bind("src_teacherOf", "csv", "data/001", "src_teacherOf.csv").
+@input("src_teachingAssistantOf").
+@bind("src_teachingAssistantOf", "csv", "data/001", "src_teachingAssistantOf.csv").
+@input("src_telephone").
+@bind("src_telephone", "csv", "data/001", "src_telephone.csv").
+@input("src_undergraduateDegreeFrom").
+@bind("src_undergraduateDegreeFrom", "csv", "data/001", "src_undergraduateDegreeFrom.csv").
+@input("src_worksFor").
+@bind("src_worksFor", "csv", "data/001", "src_worksFor.csv").

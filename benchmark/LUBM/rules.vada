@@ -1,0 +1,161 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "LUBM" scenario - dependencies
+% Transcribed from
+%   chasebench/scenarios/LUBM/dependencies/LUBM.st-tgds.txt   (30 rules)
+%   chasebench/scenarios/LUBM/dependencies/LUBM.t-tgds.txt    (106 rules)
+%
+% Predicate names are the benchmark's own, with the first letter lower-cased:
+% a Vadalog identifier cannot start upper-case. Source relations keep their
+% `src_` prefix; the ontology's properties (advisor, worksFor, ...) were
+% already lower-case.
+%
+% The source relations are bound to CSV files by inputs-<size>.vada; the
+% @output declarations live in the driver programs.
+% ---------------------------------------------------------------------------
+
+% --- source-to-target TGDs: the source relations, renamed ------------------
+
+advisor(X, Y) :- src_advisor(X, Y).
+assistantProfessor(X) :- src_AssistantProfessor(X).
+associateProfessor(X) :- src_AssociateProfessor(X).
+course(X) :- src_Course(X).
+department(X) :- src_Department(X).
+doctoralDegreeFrom(X, Y) :- src_doctoralDegreeFrom(X, Y).
+emailAddress(X, Y) :- src_emailAddress(X, Y).
+fullProfessor(X) :- src_FullProfessor(X).
+graduateCourse(X) :- src_GraduateCourse(X).
+graduateStudent(X) :- src_GraduateStudent(X).
+headOf(X, Y) :- src_headOf(X, Y).
+lecturer(X) :- src_Lecturer(X).
+mastersDegreeFrom(X, Y) :- src_mastersDegreeFrom(X, Y).
+memberOf(X, Y) :- src_memberOf(X, Y).
+name(X, Y) :- src_name(X, Y).
+publication(X) :- src_Publication(X).
+publicationAuthor(X, Y) :- src_publicationAuthor(X, Y).
+researchAssistant(X) :- src_ResearchAssistant(X).
+researchGroup(X) :- src_ResearchGroup(X).
+researchInterest(X, Y) :- src_researchInterest(X, Y).
+subOrganizationOf(X, Y) :- src_subOrganizationOf(X, Y).
+takesCourse(X, Y) :- src_takesCourse(X, Y).
+teacherOf(X, Y) :- src_teacherOf(X, Y).
+teachingAssistant(X) :- src_TeachingAssistant(X).
+teachingAssistantOf(X, Y) :- src_teachingAssistantOf(X, Y).
+telephone(X, Y) :- src_telephone(X, Y).
+undergraduateDegreeFrom(X, Y) :- src_undergraduateDegreeFrom(X, Y).
+undergraduateStudent(X) :- src_UndergraduateStudent(X).
+university(X) :- src_University(X).
+worksFor(X, Y) :- src_worksFor(X, Y).
+
+% --- target TGDs: the LUBM ontology ----------------------------------------
+% Nine of these have an existential head variable (a head atom introducing a
+% variable the body does not bind), so the chase invents marked nulls: the
+% department a chair must head, the organisation an employee must work for,
+% the course a student must take. Several of them are also recursive, and
+% `subOrganizationOf` is a plain transitive closure.
+
+employee(X) :- administrativeStaff(X).
+person(X) :- advisor(X, X1).
+professor(X1) :- advisor(X, X1).
+organization(X) :- affiliatedOrganizationOf(X, X1).
+organization(X1) :- affiliatedOrganizationOf(X, X1).
+organization(X) :- affiliateOf(X, X1).
+person(X1) :- affiliateOf(X, X1).
+person(X) :- age(X, X1).
+publication(X) :- article(X).
+professor(X) :- assistantProfessor(X).
+professor(X) :- associateProfessor(X).
+publication(X) :- book(X).
+headOf(X, Y), department(Y) :- chair(X).
+person(X) :- chair(X).
+professor(X) :- chair(X).
+administrativeStaff(X) :- clericalStaff(X).
+organization(X) :- college(X).
+article(X) :- conferencePaper(X).
+work(X) :- course(X).
+headOf(X, Y), college(Y) :- dean(X).
+professor(X) :- dean(X).
+person(X) :- degreeFrom(X, X1).
+university(X1) :- degreeFrom(X, X1).
+hasAlumnus(X, Y) :- degreeFrom(Y, X).
+organization(X) :- department(X).
+headOf(X, Y), program(Y) :- director(X).
+person(X) :- director(X).
+person(X) :- doctoralDegreeFrom(X, X1).
+university(X1) :- doctoralDegreeFrom(X, X1).
+degreeFrom(X, Y) :- doctoralDegreeFrom(X, Y).
+person(X) :- emailAddress(X, X1).
+person(X) :- employee(X).
+worksFor(X, Y), organization(Y) :- employee(X).
+employee(X) :- faculty(X).
+professor(X) :- fullProfessor(X).
+course(X) :- graduateCourse(X).
+person(X) :- graduateStudent(X).
+takesCourse(X, Y), graduateCourse(Y) :- graduateStudent(X).
+person(X1) :- hasAlumnus(X, X1).
+university(X) :- hasAlumnus(X, X1).
+degreeFrom(X, Y) :- hasAlumnus(Y, X).
+dean(X) :- headOf(X, X1), college(X1).
+worksFor(X, Y) :- headOf(X, Y).
+organization(X) :- institute(X).
+article(X) :- journalArticle(X).
+faculty(X) :- lecturer(X).
+course(X1) :- listedCourse(X, X1).
+schedule(X) :- listedCourse(X, X1).
+publication(X) :- manual(X).
+person(X) :- mastersDegreeFrom(X, X1).
+university(X1) :- mastersDegreeFrom(X, X1).
+degreeFrom(X, Y) :- mastersDegreeFrom(X, Y).
+organization(X) :- member(X, X1).
+person(X1) :- member(X, X1).
+memberOf(X, Y) :- member(Y, X).
+member(X, Y) :- memberOf(Y, X).
+organization(X) :- orgPublication(X, X1).
+publication(X1) :- orgPublication(X, X1).
+chair(X) :- person(X), headOf(X, X1), department(X1).
+director(X) :- person(X), headOf(X, X1), program(X1).
+student(X) :- person(X), takesCourse(X, X1), course(X1).
+teachingAssistant(X) :- person(X), teachingAssistantOf(X, X1), course(X1).
+employee(X) :- person(X), worksFor(X, X1), organization(X1).
+faculty(X) :- postDoc(X).
+faculty(X) :- professor(X).
+organization(X) :- program(X).
+person(X1) :- publicationAuthor(X, X1).
+publication(X) :- publicationAuthor(X, X1).
+publication(X) :- publicationDate(X, X1).
+publication(X) :- publicationResearch(X, X1).
+research(X1) :- publicationResearch(X, X1).
+work(X) :- research(X).
+person(X) :- researchAssistant(X).
+worksFor(X, Y), researchGroup(Y) :- researchAssistant(X).
+organization(X) :- researchGroup(X).
+research(X1) :- researchProject(X, X1).
+researchGroup(X) :- researchProject(X, X1).
+publication(X) :- software(X).
+publication(X1) :- softwareDocumentation(X, X1).
+software(X) :- softwareDocumentation(X, X1).
+software(X) :- softwareVersion(X, X1).
+publication(X) :- specification(X).
+person(X) :- student(X).
+takesCourse(X, Y), course(Y) :- student(X).
+organization(X) :- subOrganizationOf(X, X1).
+organization(X1) :- subOrganizationOf(X, X1).
+subOrganizationOf(X, Z) :- subOrganizationOf(X, Y), subOrganizationOf(Y, Z).
+administrativeStaff(X) :- systemsStaff(X).
+course(X1) :- teacherOf(X, X1).
+faculty(X) :- teacherOf(X, X1).
+person(X) :- teachingAssistant(X).
+teachingAssistantOf(X, Y), course(Y) :- teachingAssistant(X).
+course(X1) :- teachingAssistantOf(X, X1).
+teachingAssistant(X) :- teachingAssistantOf(X, X1).
+article(X) :- technicalReport(X).
+person(X) :- telephone(X, X1).
+professor(X) :- tenured(X, X1).
+person(X) :- title(X, X1).
+person(X) :- undergraduateDegreeFrom(X, X1).
+university(X1) :- undergraduateDegreeFrom(X, X1).
+degreeFrom(X, Y) :- undergraduateDegreeFrom(X, Y).
+student(X) :- undergraduateStudent(X).
+organization(X) :- university(X).
+publication(X) :- unofficialPublication(X).
+professor(X) :- visitingProfessor(X).
+memberOf(X, Y) :- worksFor(X, Y).

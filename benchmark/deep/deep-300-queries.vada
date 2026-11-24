@@ -1,0 +1,20 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "deep", variant 300 - the twenty benchmark queries on the chased
+% instance. Transcribed from chasebench/scenarios/deep/300/queries/.
+%
+%   python3 ../../dist/vadalog.pyz run deep-300-queries.vada --format csv --out out-q300
+%
+% Bodies are reordered so that the joins bind early; the engine has no cost
+% model, and these are joins of up to eight atoms.
+% ---------------------------------------------------------------------------
+@include("inputs.vada").
+@include("st-tgds.vada").
+@include("t-tgds-300.vada").
+
+q(X1, X2) :-
+    m168004(X1, X2, X7, X8),
+    m29004(X2, X3, X9, X10),
+    m96004(X3, X4, X11, X12),
+    m298004(Y1, X1, Y2, Y3).
+
+@output("q").

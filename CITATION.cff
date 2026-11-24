@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software in your research, publications, or other projects, please cite it as follows."
+type: software
+title: "A Portable Implementation of the Vadalog Language"
+authors:
+  - given-names: Luigi
+    family-names: Bellomarini
+  - given-names: Eleonora
+    family-names: Laurenza
+  - given-names: Emanuel
+    family-names: Sallinger
+repository-code: "https://github.com/joint-kg-labs/vadalog-portable/"
+url: "https://github.com/joint-kg-labs/vadalog-portable/"
+license: MIT
+preferred-citation:
+  type: software
+  title: "A Portable Implementation of the Vadalog Language"
+  authors:
+    - given-names: Luigi
+      family-names: Bellomarini
+    - given-names: Eleonora
+      family-names: Laurenza
+    - given-names: Emanuel
+      family-names: Sallinger
+  year: 2026
+  url: "https://github.com/joint-kg-labs/vadalog-portable/"

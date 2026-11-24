@@ -1,0 +1,280 @@
+# Cuts a release.  Three things are built and each is proven before anything
+# is published:
+#
+#   * `vadalog.pyz` — the portable single file, which needs a Python 3.9+ and
+#     then runs on any of them;
+#   * five native executables — one per operating system and architecture,
+#     which need nothing at all (.github/workflows/binaries.yml);
+#   * the sdist and the wheel, for anyone with pip.
+#
+# The archive is exercised on three operating systems and on the oldest and
+# newest interpreter the project supports; each binary is exercised on the
+# machine that built it.  Only then are the files, with their checksums,
+# attached to a GitHub release:
+#
+#   git tag -a v0.6.0 -m "v0.6.0" && git push origin v0.6.0
+#
+# The tag must match `__version__` in src/vadalog/__init__.py, the one place
+# the version is written; the build job refuses a tag that does not.
+#
+# A run started by hand (workflow_dispatch) builds and tests but publishes
+# nothing, which is the way to rehearse a release before tagging.
+
+name: Release
+
+on:
+  push:
+    tags: [ "v*" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.13"
+
+    - name: The tag matches the version in the source
+      # `--version`, the archive and the wheel all read `vadalog.__version__`,
+      # so a tag that disagrees with it would publish a mislabelled release.
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        version=$(PYTHONPATH=src python -c "import vadalog; print(vadalog.__version__)")
+        if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+          echo "::error::tag $GITHUB_REF_NAME, but src/vadalog/__init__.py says $version"
+          exit 1
+        fi
+
+    - name: Build the single-file archive
+      # Standard library only: no dependencies to install first.
+      run: python tools/build_pyz.py
+
+    - name: Build the sdist and the wheel
+      run: |
+        python -m pip install --upgrade pip build
+        python -m build
+
+    - name: Upload the build
+      uses: actions/upload-artifact@v7
+      with:
+        name: dist
+        path: dist/
+        if-no-files-found: error
+
+  # The five native executables, built and exercised one per runner.  Called
+  # rather than copied, so the binaries a tag ships are the same ones the
+  # workflow builds and tests on its own.
+  binaries:
+    uses: ./.github/workflows/binaries.yml
+
+  smoke:
+
+    needs: build
+    runs-on: ${{ matrix.os }}
+    # Nothing here should take minutes.  A ceiling means a wedged step fails
+    # visibly instead of holding a runner for the default six hours.
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        # The oldest and the newest interpreter the project claims to support.
+        python-version: ["3.9", "3.13"]
+        exclude:
+          # The hosted macOS runners are arm64 and have no 3.9 build available.
+          - os: macos-latest
+            python-version: "3.9"
+          # ubuntu-latest is Ubuntu 26.04, which has no 3.9 build either
+          # (3.9 is end-of-life), so 3.9 runs on 24.04 instead.
+          - os: ubuntu-latest
+            python-version: "3.9"
+        include:
+          - os: ubuntu-24.04
+            python-version: "3.9"
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Download the build
+      uses: actions/download-artifact@v8
+      with:
+        name: dist
+        path: dist
+
+    - name: The page is a resource inside the archive
+      # `index.html` is read with importlib.resources, never as a file on
+      # disk.  This is the cheap, unhangable half of the check; the UI is
+      # actually started below.
+      timeout-minutes: 3
+      shell: python {0}
+      run: |
+        import sys, zipfile
+        names = zipfile.ZipFile("dist/vadalog.pyz").namelist()
+        assert "vadalog/ui/index.html" in names, sorted(names)[:20]
+        # Zip entries are named with forward slashes, whatever the platform.
+        assert not any("\\" in name for name in names)
+        sys.path.insert(0, "dist/vadalog.pyz")
+        from vadalog.ui import server
+        page = server.read_index()
+        if b"<title>vadalog</title>" not in page:
+            sys.exit("the page in the archive is not the page")
+        print("resource ok, %d bytes" % len(page))
+
+    - name: Run the archive the way a recipient does
+      # Nothing is installed here on purpose: this is exactly what someone who
+      # was handed the file does with it.  The same suite the binaries go
+      # through — every example, the bundled examples extracted and run,
+      # `check` and `explain`, the documented exit codes, accented output to a
+      # redirected file, and the web UI answering over HTTP.
+      timeout-minutes: 10
+      run: python tools/smoke.py --port 8899 -- python dist/vadalog.pyz
+
+  release:
+
+    needs: [smoke, binaries]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Download the archive, the sdist and the wheel
+      uses: actions/download-artifact@v8
+      with:
+        name: dist
+        path: dist
+
+    - name: Download the binaries
+      uses: actions/download-artifact@v8
+      with:
+        pattern: binary-*
+        path: dist
+        merge-multiple: true
+
+    - name: Checksums
+      # Over everything that is about to be published, so a file added to the
+      # release can never be left out of the list.  Built outside `dist` and
+      # moved in: a checksum file cannot list itself.
+      run: |
+        find dist -maxdepth 1 -type f -printf '%P\n' | sort > names.txt
+        (cd dist && xargs -a ../names.txt sha256sum) > SHA256SUMS
+        mv SHA256SUMS dist/SHA256SUMS
+        cat dist/SHA256SUMS
+
+    - name: Write the release notes
+      run: |
+        cat > NOTES.md <<'NOTES'
+        ## Install
+
+        Two ways to have the engine, neither of which installs anything.
+
+        ### No Python on the machine: a binary
+
+        Download the one file for your machine. It carries the engine, the web
+        UI and the examples *and* a Python interpreter, so there is no
+        prerequisite whatsoever.
+
+        | file | for |
+        |---|---|
+        | `vadalog-linux-x86_64` | Linux, Intel or AMD |
+        | `vadalog-linux-arm64` | Linux, ARM (Graviton, Ampere, Raspberry Pi 64-bit) |
+        | `vadalog-macos-x86_64` | macOS, Intel |
+        | `vadalog-macos-arm64` | macOS, Apple silicon (M1 and later) |
+        | `vadalog-windows-x86_64.exe` | Windows, 64-bit |
+
+        ```bash
+        chmod +x vadalog-macos-arm64                 # macOS, Linux: once
+        ./vadalog-macos-arm64 run program.vada
+        ./vadalog-macos-arm64 ui                     # the editor, in a browser
+        ```
+
+        ```powershell
+        .\vadalog-windows-x86_64.exe run program.vada
+        ```
+
+        The binaries are **not signed**. On macOS the first run is refused
+        because the file was downloaded — clear the quarantine flag once:
+
+        ```bash
+        xattr -d com.apple.quarantine vadalog-macos-arm64
+        ```
+
+        On Windows, SmartScreen offers *More info* → *Run anyway*. `SHA256SUMS`
+        below is what to check the download against.
+
+        ### A Python 3.9+ already there: `vadalog.pyz`
+
+        **`vadalog.pyz`**, about 80 KB, is the whole engine in one portable
+        file — the same on every operating system.
+
+        ```
+        python3 vadalog.pyz run program.vada      # macOS, Linux
+        python  vadalog.pyz run program.vada      # Windows
+        python3 vadalog.pyz ui                    # the editor, in a browser
+        ```
+
+        On macOS and Linux `chmod +x vadalog.pyz` makes it runnable as
+        `./vadalog.pyz`. No installation, no virtualenv, no administrator
+        rights, and deleting the file removes it completely.
+
+        ### Something to run
+
+        A handful of toy programs travel inside every build, binaries
+        included. Write them out, and you have something to run and edit
+        straight away — from a binary, under whichever name you downloaded:
+
+        ```
+        ./vadalog-macos-arm64 examples                        # what there is
+        ./vadalog-macos-arm64 examples --extract vadalog-examples
+        ./vadalog-macos-arm64 run vadalog-examples/reachability.vada
+        ./vadalog-macos-arm64 ui  --root vadalog-examples     # in the editor
+        ```
+
+        or from the archive:
+
+        ```
+        python3 vadalog.pyz examples                          # what there is
+        python3 vadalog.pyz examples --extract vadalog-examples
+        python3 vadalog.pyz run vadalog-examples/reachability.vada
+        python3 vadalog.pyz ui  --root vadalog-examples       # in the editor
+        ```
+
+        With pip available, `pip install vadalog_portable-*.whl` instead gives
+        the `vadalog` command on the PATH. `SHA256SUMS` carries the checksums.
+        NOTES
+        cat NOTES.md
+
+    - name: Publish the release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        ls -l dist
+        gh release create "$GITHUB_REF_NAME" dist/* \
+          --title "$GITHUB_REF_NAME" \
+          --notes-file NOTES.md \
+          --generate-notes

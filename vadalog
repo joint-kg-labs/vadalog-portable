@@ -1,0 +1,8 @@
+#!/bin/sh
+# Run the engine straight from this directory, with no installation at all.
+#
+#   ./vadalog run examples/reachability.vada
+#
+# Override the interpreter with PYTHON=... if `python3` is not the one you want.
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PYTHONPATH="$here/src${PYTHONPATH:+:$PYTHONPATH}" exec "${PYTHON:-python3}" -m vadalog "$@"

@@ -1,0 +1,440 @@
+% ChaseBench "Ontology-256" - the 218 source relations, the full instance, about 10 000 rows per relation.
+% Every column is a STRING, so no @mapping is needed: without one the
+% reader types every field as a string. The files carry no header row.
+
+@input("act_vnm_8_nl0_ce0").
+@bind("act_vnm_8_nl0_ce0", "csv", "data/10k", "act_vnm_8_nl0_ce0.csv").
+@input("air_ad_39_nl0_ce0").
+@bind("air_ad_39_nl0_ce0", "csv", "data/10k", "air_ad_39_nl0_ce0.csv").
+@input("amount_vnm_4_nl0_ce0").
+@bind("amount_vnm_4_nl0_ce0", "csv", "data/10k", "amount_vnm_4_nl0_ce0.csv").
+@input("apparatus_vnm_47_nl0_ce0").
+@bind("apparatus_vnm_47_nl0_ce0", "csv", "data/10k", "apparatus_vnm_47_nl0_ce0.csv").
+@input("attack_vi_51_nl0_ce0").
+@bind("attack_vi_51_nl0_ce0", "csv", "data/10k", "attack_vi_51_nl0_ce0.csv").
+@input("automatic_ad_29_nl0_ce0").
+@bind("automatic_ad_29_nl0_ce0", "csv", "data/10k", "automatic_ad_29_nl0_ce0.csv").
+@input("automatic_vnm_22_nl0_ce0").
+@bind("automatic_vnm_22_nl0_ce0", "csv", "data/10k", "automatic_vnm_22_nl0_ce0.csv").
+@input("avoid_vh_18_nl0_ce0").
+@bind("avoid_vh_18_nl0_ce0", "csv", "data/10k", "avoid_vh_18_nl0_ce0.csv").
+@input("avoid_vi_32_nl0_ce0").
+@bind("avoid_vi_32_nl0_ce0", "csv", "data/10k", "avoid_vi_32_nl0_ce0.csv").
+@input("back_ad_62_nl0_ce0").
+@bind("back_ad_62_nl0_ce0", "csv", "data/10k", "back_ad_62_nl0_ce0.csv").
+@input("bag_vh_38_nl0_ce0").
+@bind("bag_vh_38_nl0_ce0", "csv", "data/10k", "bag_vh_38_nl0_ce0.csv").
+@input("base_vh_64_nl0_ce0").
+@bind("base_vh_64_nl0_ce0", "csv", "data/10k", "base_vh_64_nl0_ce0.csv").
+@input("bath_ad_14_nl0_ce0").
+@bind("bath_ad_14_nl0_ce0", "csv", "data/10k", "bath_ad_14_nl0_ce0.csv").
+@input("become_ad_32_nl0_ce0").
+@bind("become_ad_32_nl0_ce0", "csv", "data/10k", "become_ad_32_nl0_ce0.csv").
+@input("become_vh_45_nl0_ce0").
+@bind("become_vh_45_nl0_ce0", "csv", "data/10k", "become_vh_45_nl0_ce0.csv").
+@input("bed_ad_53_nl0_ce0").
+@bind("bed_ad_53_nl0_ce0", "csv", "data/10k", "bed_ad_53_nl0_ce0.csv").
+@input("behavior_vi_59_nl0_ce0").
+@bind("behavior_vi_59_nl0_ce0", "csv", "data/10k", "behavior_vi_59_nl0_ce0.csv").
+@input("belong_vnm_18_nl0_ce0").
+@bind("belong_vnm_18_nl0_ce0", "csv", "data/10k", "belong_vnm_18_nl0_ce0.csv").
+@input("birth_vi_15_nl0_ce0").
+@bind("birth_vi_15_nl0_ce0", "csv", "data/10k", "birth_vi_15_nl0_ce0.csv").
+@input("book_vh_42_nl0_ce0").
+@bind("book_vh_42_nl0_ce0", "csv", "data/10k", "book_vh_42_nl0_ce0.csv").
+@input("branch_vi_11_nl0_ce0").
+@bind("branch_vi_11_nl0_ce0", "csv", "data/10k", "branch_vi_11_nl0_ce0.csv").
+@input("brick_vi_62_nl0_ce0").
+@bind("brick_vi_62_nl0_ce0", "csv", "data/10k", "brick_vi_62_nl0_ce0.csv").
+@input("bright_vi_12_nl0_ce0").
+@bind("bright_vi_12_nl0_ce0", "csv", "data/10k", "bright_vi_12_nl0_ce0.csv").
+@input("bucket_vh_8_nl0_ce0").
+@bind("bucket_vh_8_nl0_ce0", "csv", "data/10k", "bucket_vh_8_nl0_ce0.csv").
+@input("building_vh_33_nl0_ce0").
+@bind("building_vh_33_nl0_ce0", "csv", "data/10k", "building_vh_33_nl0_ce0.csv").
+@input("buy_vh_62_nl0_ce0").
+@bind("buy_vh_62_nl0_ce0", "csv", "data/10k", "buy_vh_62_nl0_ce0.csv").
+@input("buy_vnm_20_nl0_ce0").
+@bind("buy_vnm_20_nl0_ce0", "csv", "data/10k", "buy_vnm_20_nl0_ce0.csv").
+@input("cause_ad_31_nl0_ce0").
+@bind("cause_ad_31_nl0_ce0", "csv", "data/10k", "cause_ad_31_nl0_ce0.csv").
+@input("certain_vnm_3_nl0_ce0").
+@bind("certain_vnm_3_nl0_ce0", "csv", "data/10k", "certain_vnm_3_nl0_ce0.csv").
+@input("check_vi_49_nl0_ce0").
+@bind("check_vi_49_nl0_ce0", "csv", "data/10k", "check_vi_49_nl0_ce0.csv").
+@input("chemical_ad_20_nl0_ce0").
+@bind("chemical_ad_20_nl0_ce0", "csv", "data/10k", "chemical_ad_20_nl0_ce0.csv").
+@input("chess_ad_52_nl0_ce0").
+@bind("chess_ad_52_nl0_ce0", "csv", "data/10k", "chess_ad_52_nl0_ce0.csv").
+@input("chief_vnm_17_nl0_ce0").
+@bind("chief_vnm_17_nl0_ce0", "csv", "data/10k", "chief_vnm_17_nl0_ce0.csv").
+@input("chief_vnm_30_nl0_ce0").
+@bind("chief_vnm_30_nl0_ce0", "csv", "data/10k", "chief_vnm_30_nl0_ce0.csv").
+@input("chin_vnm_13_nl0_ce0").
+@bind("chin_vnm_13_nl0_ce0", "csv", "data/10k", "chin_vnm_13_nl0_ce0.csv").
+@input("circle_vnm_51_nl0_ce0").
+@bind("circle_vnm_51_nl0_ce0", "csv", "data/10k", "circle_vnm_51_nl0_ce0.csv").
+@input("clear_vi_64_nl0_ce0").
+@bind("clear_vi_64_nl0_ce0", "csv", "data/10k", "clear_vi_64_nl0_ce0.csv").
+@input("collect_vh_19_nl0_ce0").
+@bind("collect_vh_19_nl0_ce0", "csv", "data/10k", "collect_vh_19_nl0_ce0.csv").
+@input("comb_vi_52_nl0_ce0").
+@bind("comb_vi_52_nl0_ce0", "csv", "data/10k", "comb_vi_52_nl0_ce0.csv").
+@input("committee_vnm_15_nl0_ce0").
+@bind("committee_vnm_15_nl0_ce0", "csv", "data/10k", "committee_vnm_15_nl0_ce0.csv").
+@input("complain_vh_5_nl0_ce0").
+@bind("complain_vh_5_nl0_ce0", "csv", "data/10k", "complain_vh_5_nl0_ce0.csv").
+@input("condition_ad_35_nl0_ce0").
+@bind("condition_ad_35_nl0_ce0", "csv", "data/10k", "condition_ad_35_nl0_ce0.csv").
+@input("contact_vh_58_nl0_ce0").
+@bind("contact_vh_58_nl0_ce0", "csv", "data/10k", "contact_vh_58_nl0_ce0.csv").
+@input("control_ad_11_nl0_ce0").
+@bind("control_ad_11_nl0_ce0", "csv", "data/10k", "control_ad_11_nl0_ce0.csv").
+@input("control_vh_39_nl0_ce0").
+@bind("control_vh_39_nl0_ce0", "csv", "data/10k", "control_vh_39_nl0_ce0.csv").
+@input("copy_vnm_23_nl0_ce0").
+@bind("copy_vnm_23_nl0_ce0", "csv", "data/10k", "copy_vnm_23_nl0_ce0.csv").
+@input("cover_vi_17_nl0_ce0").
+@bind("cover_vi_17_nl0_ce0", "csv", "data/10k", "cover_vi_17_nl0_ce0.csv").
+@input("cruel_ad_54_nl0_ce0").
+@bind("cruel_ad_54_nl0_ce0", "csv", "data/10k", "cruel_ad_54_nl0_ce0.csv").
+@input("curve_vi_58_nl0_ce0").
+@bind("curve_vi_58_nl0_ce0", "csv", "data/10k", "curve_vi_58_nl0_ce0.csv").
+@input("cut_vi_25_nl0_ce0").
+@bind("cut_vi_25_nl0_ce0", "csv", "data/10k", "cut_vi_25_nl0_ce0.csv").
+@input("damage_vi_61_nl0_ce0").
+@bind("damage_vi_61_nl0_ce0", "csv", "data/10k", "damage_vi_61_nl0_ce0.csv").
+@input("danger_vi_53_nl0_ce0").
+@bind("danger_vi_53_nl0_ce0", "csv", "data/10k", "danger_vi_53_nl0_ce0.csv").
+@input("degree_vh_32_nl0_ce0").
+@bind("degree_vh_32_nl0_ce0", "csv", "data/10k", "degree_vh_32_nl0_ce0.csv").
+@input("delicate_ad_6_nl0_ce0").
+@bind("delicate_ad_6_nl0_ce0", "csv", "data/10k", "delicate_ad_6_nl0_ce0.csv").
+@input("detail_vh_48_nl0_ce0").
+@bind("detail_vh_48_nl0_ce0", "csv", "data/10k", "detail_vh_48_nl0_ce0.csv").
+@input("disgust_ad_8_nl0_ce0").
+@bind("disgust_ad_8_nl0_ce0", "csv", "data/10k", "disgust_ad_8_nl0_ce0.csv").
+@input("division_vh_2_nl0_ce0").
+@bind("division_vh_2_nl0_ce0", "csv", "data/10k", "division_vh_2_nl0_ce0.csv").
+@input("do_vnm_58_nl0_ce0").
+@bind("do_vnm_58_nl0_ce0", "csv", "data/10k", "do_vnm_58_nl0_ce0.csv").
+@input("dress_ad_55_nl0_ce0").
+@bind("dress_ad_55_nl0_ce0", "csv", "data/10k", "dress_ad_55_nl0_ce0.csv").
+@input("drink_vh_10_nl0_ce0").
+@bind("drink_vh_10_nl0_ce0", "csv", "data/10k", "drink_vh_10_nl0_ce0.csv").
+@input("drive_vh_37_nl0_ce0").
+@bind("drive_vh_37_nl0_ce0", "csv", "data/10k", "drive_vh_37_nl0_ce0.csv").
+@input("early_vi_56_nl0_ce0").
+@bind("early_vi_56_nl0_ce0", "csv", "data/10k", "early_vi_56_nl0_ce0.csv").
+@input("eat_vnm_63_nl0_ce0").
+@bind("eat_vnm_63_nl0_ce0", "csv", "data/10k", "eat_vnm_63_nl0_ce0.csv").
+@input("effect_vnm_34_nl0_ce0").
+@bind("effect_vnm_34_nl0_ce0", "csv", "data/10k", "effect_vnm_34_nl0_ce0.csv").
+@input("enable_ad_9_nl0_ce0").
+@bind("enable_ad_9_nl0_ce0", "csv", "data/10k", "enable_ad_9_nl0_ce0.csv").
+@input("error_vnm_43_nl0_ce0").
+@bind("error_vnm_43_nl0_ce0", "csv", "data/10k", "error_vnm_43_nl0_ce0.csv").
+@input("examine_ad_26_nl0_ce0").
+@bind("examine_ad_26_nl0_ce0", "csv", "data/10k", "examine_ad_26_nl0_ce0.csv").
+@input("expect_vnm_21_nl0_ce0").
+@bind("expect_vnm_21_nl0_ce0", "csv", "data/10k", "expect_vnm_21_nl0_ce0.csv").
+@input("feather_vi_21_nl0_ce0").
+@bind("feather_vi_21_nl0_ce0", "csv", "data/10k", "feather_vi_21_nl0_ce0.csv").
+@input("fill_vh_46_nl0_ce0").
+@bind("fill_vh_46_nl0_ce0", "csv", "data/10k", "fill_vh_46_nl0_ce0.csv").
+@input("flower_vi_30_nl0_ce0").
+@bind("flower_vi_30_nl0_ce0", "csv", "data/10k", "flower_vi_30_nl0_ce0.csv").
+@input("fold_vnm_53_nl0_ce0").
+@bind("fold_vnm_53_nl0_ce0", "csv", "data/10k", "fold_vnm_53_nl0_ce0.csv").
+@input("force_vnm_19_nl0_ce0").
+@bind("force_vnm_19_nl0_ce0", "csv", "data/10k", "force_vnm_19_nl0_ce0.csv").
+@input("forgive_vi_24_nl0_ce0").
+@bind("forgive_vi_24_nl0_ce0", "csv", "data/10k", "forgive_vi_24_nl0_ce0.csv").
+@input("friend_ad_22_nl0_ce0").
+@bind("friend_ad_22_nl0_ce0", "csv", "data/10k", "friend_ad_22_nl0_ce0.csv").
+@input("fruit_vi_28_nl0_ce0").
+@bind("fruit_vi_28_nl0_ce0", "csv", "data/10k", "fruit_vi_28_nl0_ce0.csv").
+@input("gain_ad_46_nl0_ce0").
+@bind("gain_ad_46_nl0_ce0", "csv", "data/10k", "gain_ad_46_nl0_ce0.csv").
+@input("garden_vi_3_nl0_ce0").
+@bind("garden_vi_3_nl0_ce0", "csv", "data/10k", "garden_vi_3_nl0_ce0.csv").
+@input("glove_vi_63_nl0_ce0").
+@bind("glove_vi_63_nl0_ce0", "csv", "data/10k", "glove_vi_63_nl0_ce0.csv").
+@input("government_vh_9_nl0_ce0").
+@bind("government_vh_9_nl0_ce0", "csv", "data/10k", "government_vh_9_nl0_ce0.csv").
+@input("green_ad_27_nl0_ce0").
+@bind("green_ad_27_nl0_ce0", "csv", "data/10k", "green_ad_27_nl0_ce0.csv").
+@input("guide_vh_27_nl0_ce0").
+@bind("guide_vh_27_nl0_ce0", "csv", "data/10k", "guide_vh_27_nl0_ce0.csv").
+@input("hanging_vi_16_nl0_ce0").
+@bind("hanging_vi_16_nl0_ce0", "csv", "data/10k", "hanging_vi_16_nl0_ce0.csv").
+@input("harbor_vi_8_nl0_ce0").
+@bind("harbor_vi_8_nl0_ce0", "csv", "data/10k", "harbor_vi_8_nl0_ce0.csv").
+@input("hard_vnm_36_nl0_ce0").
+@bind("hard_vnm_36_nl0_ce0", "csv", "data/10k", "hard_vnm_36_nl0_ce0.csv").
+@input("hat_vnm_12_nl0_ce0").
+@bind("hat_vnm_12_nl0_ce0", "csv", "data/10k", "hat_vnm_12_nl0_ce0.csv").
+@input("head_vnm_28_nl0_ce0").
+@bind("head_vnm_28_nl0_ce0", "csv", "data/10k", "head_vnm_28_nl0_ce0.csv").
+@input("hide_vh_20_nl0_ce0").
+@bind("hide_vh_20_nl0_ce0", "csv", "data/10k", "hide_vh_20_nl0_ce0.csv").
+@input("ice_vi_13_nl0_ce0").
+@bind("ice_vi_13_nl0_ce0", "csv", "data/10k", "ice_vi_13_nl0_ce0.csv").
+@input("imagine_ad_23_nl0_ce0").
+@bind("imagine_ad_23_nl0_ce0", "csv", "data/10k", "imagine_ad_23_nl0_ce0.csv").
+@input("important_vh_7_nl0_ce0").
+@bind("important_vh_7_nl0_ce0", "csv", "data/10k", "important_vh_7_nl0_ce0.csv").
+@input("impulse_ad_10_nl0_ce0").
+@bind("impulse_ad_10_nl0_ce0", "csv", "data/10k", "impulse_ad_10_nl0_ce0.csv").
+@input("insurance_vi_14_nl0_ce0").
+@bind("insurance_vi_14_nl0_ce0", "csv", "data/10k", "insurance_vi_14_nl0_ce0.csv").
+@input("insurance_vi_50_nl0_ce0").
+@bind("insurance_vi_50_nl0_ce0", "csv", "data/10k", "insurance_vi_50_nl0_ce0.csv").
+@input("join_vh_41_nl0_ce0").
+@bind("join_vh_41_nl0_ce0", "csv", "data/10k", "join_vh_41_nl0_ce0.csv").
+@input("keep_vnm_10_nl0_ce0").
+@bind("keep_vnm_10_nl0_ce0", "csv", "data/10k", "keep_vnm_10_nl0_ce0.csv").
+@input("last_vi_4_nl0_ce0").
+@bind("last_vi_4_nl0_ce0", "csv", "data/10k", "last_vi_4_nl0_ce0.csv").
+@input("last_vnm_26_nl0_ce0").
+@bind("last_vnm_26_nl0_ce0", "csv", "data/10k", "last_vnm_26_nl0_ce0.csv").
+@input("last_vnm_35_nl0_ce0").
+@bind("last_vnm_35_nl0_ce0", "csv", "data/10k", "last_vnm_35_nl0_ce0.csv").
+@input("laugh_ad_13_nl0_ce0").
+@bind("laugh_ad_13_nl0_ce0", "csv", "data/10k", "laugh_ad_13_nl0_ce0.csv").
+@input("laugh_vh_25_nl0_ce0").
+@bind("laugh_vh_25_nl0_ce0", "csv", "data/10k", "laugh_vh_25_nl0_ce0.csv").
+@input("learning_ad_36_nl0_ce0").
+@bind("learning_ad_36_nl0_ce0", "csv", "data/10k", "learning_ad_36_nl0_ce0.csv").
+@input("leather_vh_52_nl0_ce0").
+@bind("leather_vh_52_nl0_ce0", "csv", "data/10k", "leather_vh_52_nl0_ce0.csv").
+@input("library_ad_3_nl0_ce0").
+@bind("library_ad_3_nl0_ce0", "csv", "data/10k", "library_ad_3_nl0_ce0.csv").
+@input("limit_vnm_60_nl0_ce0").
+@bind("limit_vnm_60_nl0_ce0", "csv", "data/10k", "limit_vnm_60_nl0_ce0.csv").
+@input("line_vi_10_nl0_ce0").
+@bind("line_vi_10_nl0_ce0", "csv", "data/10k", "line_vi_10_nl0_ce0.csv").
+@input("look_vh_63_nl0_ce0").
+@bind("look_vh_63_nl0_ce0", "csv", "data/10k", "look_vh_63_nl0_ce0.csv").
+@input("loose_vnm_32_nl0_ce0").
+@bind("loose_vnm_32_nl0_ce0", "csv", "data/10k", "loose_vnm_32_nl0_ce0.csv").
+@input("loud_vnm_16_nl0_ce0").
+@bind("loud_vnm_16_nl0_ce0", "csv", "data/10k", "loud_vnm_16_nl0_ce0.csv").
+@input("machine_vi_23_nl0_ce0").
+@bind("machine_vi_23_nl0_ce0", "csv", "data/10k", "machine_vi_23_nl0_ce0.csv").
+@input("make_ad_5_nl0_ce0").
+@bind("make_ad_5_nl0_ce0", "csv", "data/10k", "make_ad_5_nl0_ce0.csv").
+@input("map_vi_57_nl0_ce0").
+@bind("map_vi_57_nl0_ce0", "csv", "data/10k", "map_vi_57_nl0_ce0.csv").
+@input("meal_vnm_27_nl0_ce0").
+@bind("meal_vnm_27_nl0_ce0", "csv", "data/10k", "meal_vnm_27_nl0_ce0.csv").
+@input("mixed_vi_2_nl0_ce0").
+@bind("mixed_vi_2_nl0_ce0", "csv", "data/10k", "mixed_vi_2_nl0_ce0.csv").
+@input("moon_vi_20_nl0_ce0").
+@bind("moon_vi_20_nl0_ce0", "csv", "data/10k", "moon_vi_20_nl0_ce0.csv").
+@input("music_vi_43_nl0_ce0").
+@bind("music_vi_43_nl0_ce0", "csv", "data/10k", "music_vi_43_nl0_ce0.csv").
+@input("must_vnm_57_nl0_ce0").
+@bind("must_vnm_57_nl0_ce0", "csv", "data/10k", "must_vnm_57_nl0_ce0.csv").
+@input("nail_ad_28_nl0_ce0").
+@bind("nail_ad_28_nl0_ce0", "csv", "data/10k", "nail_ad_28_nl0_ce0.csv").
+@input("natural_ad_44_nl0_ce0").
+@bind("natural_ad_44_nl0_ce0", "csv", "data/10k", "natural_ad_44_nl0_ce0.csv").
+@input("need_vnm_59_nl0_ce0").
+@bind("need_vnm_59_nl0_ce0", "csv", "data/10k", "need_vnm_59_nl0_ce0.csv").
+@input("nerve_vh_47_nl0_ce0").
+@bind("nerve_vh_47_nl0_ce0", "csv", "data/10k", "nerve_vh_47_nl0_ce0.csv").
+@input("new_vnm_62_nl0_ce0").
+@bind("new_vnm_62_nl0_ce0", "csv", "data/10k", "new_vnm_62_nl0_ce0.csv").
+@input("news_ad_17_nl0_ce0").
+@bind("news_ad_17_nl0_ce0", "csv", "data/10k", "news_ad_17_nl0_ce0.csv").
+@input("nose_vh_28_nl0_ce0").
+@bind("nose_vh_28_nl0_ce0", "csv", "data/10k", "nose_vh_28_nl0_ce0.csv").
+@input("note_vh_24_nl0_ce0").
+@bind("note_vh_24_nl0_ce0", "csv", "data/10k", "note_vh_24_nl0_ce0.csv").
+@input("opinion_vi_9_nl0_ce0").
+@bind("opinion_vi_9_nl0_ce0", "csv", "data/10k", "opinion_vi_9_nl0_ce0.csv").
+@input("organization_ad_59_nl0_ce0").
+@bind("organization_ad_59_nl0_ce0", "csv", "data/10k", "organization_ad_59_nl0_ce0.csv").
+@input("ornament_vh_17_nl0_ce0").
+@bind("ornament_vh_17_nl0_ce0", "csv", "data/10k", "ornament_vh_17_nl0_ce0.csv").
+@input("owner_vh_26_nl0_ce0").
+@bind("owner_vh_26_nl0_ce0", "csv", "data/10k", "owner_vh_26_nl0_ce0.csv").
+@input("paint_vnm_2_nl0_ce0").
+@bind("paint_vnm_2_nl0_ce0", "csv", "data/10k", "paint_vnm_2_nl0_ce0.csv").
+@input("paper_vh_35_nl0_ce0").
+@bind("paper_vh_35_nl0_ce0", "csv", "data/10k", "paper_vh_35_nl0_ce0.csv").
+@input("parallel_ad_41_nl0_ce0").
+@bind("parallel_ad_41_nl0_ce0", "csv", "data/10k", "parallel_ad_41_nl0_ce0.csv").
+@input("pass_vi_46_nl0_ce0").
+@bind("pass_vi_46_nl0_ce0", "csv", "data/10k", "pass_vi_46_nl0_ce0.csv").
+@input("past_vh_49_nl0_ce0").
+@bind("past_vh_49_nl0_ce0", "csv", "data/10k", "past_vh_49_nl0_ce0.csv").
+@input("pen_vh_15_nl0_ce0").
+@bind("pen_vh_15_nl0_ce0", "csv", "data/10k", "pen_vh_15_nl0_ce0.csv").
+@input("pencil_vh_4_nl0_ce0").
+@bind("pencil_vh_4_nl0_ce0", "csv", "data/10k", "pencil_vh_4_nl0_ce0.csv").
+@input("pipe_ad_2_nl0_ce0").
+@bind("pipe_ad_2_nl0_ce0", "csv", "data/10k", "pipe_ad_2_nl0_ce0.csv").
+@input("place_vi_6_nl0_ce0").
+@bind("place_vi_6_nl0_ce0", "csv", "data/10k", "place_vi_6_nl0_ce0.csv").
+@input("plough_vnm_55_nl0_ce0").
+@bind("plough_vnm_55_nl0_ce0", "csv", "data/10k", "plough_vnm_55_nl0_ce0.csv").
+@input("poor_vh_12_nl0_ce0").
+@bind("poor_vh_12_nl0_ce0", "csv", "data/10k", "poor_vh_12_nl0_ce0.csv").
+@input("poor_vnm_5_nl0_ce0").
+@bind("poor_vnm_5_nl0_ce0", "csv", "data/10k", "poor_vnm_5_nl0_ce0.csv").
+@input("porter_vi_55_nl0_ce0").
+@bind("porter_vi_55_nl0_ce0", "csv", "data/10k", "porter_vi_55_nl0_ce0.csv").
+@input("possible_ad_21_nl0_ce0").
+@bind("possible_ad_21_nl0_ce0", "csv", "data/10k", "possible_ad_21_nl0_ce0.csv").
+@input("power_vi_19_nl0_ce0").
+@bind("power_vi_19_nl0_ce0", "csv", "data/10k", "power_vi_19_nl0_ce0.csv").
+@input("present_vnm_11_nl0_ce0").
+@bind("present_vnm_11_nl0_ce0", "csv", "data/10k", "present_vnm_11_nl0_ce0.csv").
+@input("private_vh_55_nl0_ce0").
+@bind("private_vh_55_nl0_ce0", "csv", "data/10k", "private_vh_55_nl0_ce0.csv").
+@input("prove_vh_13_nl0_ce0").
+@bind("prove_vh_13_nl0_ce0", "csv", "data/10k", "prove_vh_13_nl0_ce0.csv").
+@input("publish_ad_18_nl0_ce0").
+@bind("publish_ad_18_nl0_ce0", "csv", "data/10k", "publish_ad_18_nl0_ce0.csv").
+@input("pull_vi_35_nl0_ce0").
+@bind("pull_vi_35_nl0_ce0", "csv", "data/10k", "pull_vi_35_nl0_ce0.csv").
+@input("quiet_ad_19_nl0_ce0").
+@bind("quiet_ad_19_nl0_ce0", "csv", "data/10k", "quiet_ad_19_nl0_ce0.csv").
+@input("raise_vi_29_nl0_ce0").
+@bind("raise_vi_29_nl0_ce0", "csv", "data/10k", "raise_vi_29_nl0_ce0.csv").
+@input("ready_vnm_6_nl0_ce0").
+@bind("ready_vnm_6_nl0_ce0", "csv", "data/10k", "ready_vnm_6_nl0_ce0.csv").
+@input("record_vi_37_nl0_ce0").
+@bind("record_vi_37_nl0_ce0", "csv", "data/10k", "record_vi_37_nl0_ce0.csv").
+@input("record_vnm_44_nl0_ce0").
+@bind("record_vnm_44_nl0_ce0", "csv", "data/10k", "record_vnm_44_nl0_ce0.csv").
+@input("regret_vnm_40_nl0_ce0").
+@bind("regret_vnm_40_nl0_ce0", "csv", "data/10k", "regret_vnm_40_nl0_ce0.csv").
+@input("reply_vi_42_nl0_ce0").
+@bind("reply_vi_42_nl0_ce0", "csv", "data/10k", "reply_vi_42_nl0_ce0.csv").
+@input("report_vnm_1_nl0_ce0").
+@bind("report_vnm_1_nl0_ce0", "csv", "data/10k", "report_vnm_1_nl0_ce0.csv").
+@input("representative_vh_34_nl0_ce0").
+@bind("representative_vh_34_nl0_ce0", "csv", "data/10k", "representative_vh_34_nl0_ce0.csv").
+@input("respect_vnm_7_nl0_ce0").
+@bind("respect_vnm_7_nl0_ce0", "csv", "data/10k", "respect_vnm_7_nl0_ce0.csv").
+@input("ring_vh_3_nl0_ce0").
+@bind("ring_vh_3_nl0_ce0", "csv", "data/10k", "ring_vh_3_nl0_ce0.csv").
+@input("run_ad_24_nl0_ce0").
+@bind("run_ad_24_nl0_ce0", "csv", "data/10k", "run_ad_24_nl0_ce0.csv").
+@input("scissors_vnm_38_nl0_ce0").
+@bind("scissors_vnm_38_nl0_ce0", "csv", "data/10k", "scissors_vnm_38_nl0_ce0.csv").
+@input("seat_vh_50_nl0_ce0").
+@bind("seat_vh_50_nl0_ce0", "csv", "data/10k", "seat_vh_50_nl0_ce0.csv").
+@input("secret_vnm_56_nl0_ce0").
+@bind("secret_vnm_56_nl0_ce0", "csv", "data/10k", "secret_vnm_56_nl0_ce0.csv").
+@input("see_ad_42_nl0_ce0").
+@bind("see_ad_42_nl0_ce0", "csv", "data/10k", "see_ad_42_nl0_ce0.csv").
+@input("seed_vi_27_nl0_ce0").
+@bind("seed_vi_27_nl0_ce0", "csv", "data/10k", "seed_vi_27_nl0_ce0.csv").
+@input("selection_vh_6_nl0_ce0").
+@bind("selection_vh_6_nl0_ce0", "csv", "data/10k", "selection_vh_6_nl0_ce0.csv").
+@input("separate_vnm_24_nl0_ce0").
+@bind("separate_vnm_24_nl0_ce0", "csv", "data/10k", "separate_vnm_24_nl0_ce0.csv").
+@input("sex_vnm_42_nl0_ce0").
+@bind("sex_vnm_42_nl0_ce0", "csv", "data/10k", "sex_vnm_42_nl0_ce0.csv").
+@input("shake_ad_37_nl0_ce0").
+@bind("shake_ad_37_nl0_ce0", "csv", "data/10k", "shake_ad_37_nl0_ce0.csv").
+@input("share_ad_50_nl0_ce0").
+@bind("share_ad_50_nl0_ce0", "csv", "data/10k", "share_ad_50_nl0_ce0.csv").
+@input("shoe_vh_57_nl0_ce0").
+@bind("shoe_vh_57_nl0_ce0", "csv", "data/10k", "shoe_vh_57_nl0_ce0.csv").
+@input("shut_vnm_52_nl0_ce0").
+@bind("shut_vnm_52_nl0_ce0", "csv", "data/10k", "shut_vnm_52_nl0_ce0.csv").
+@input("sing_ad_58_nl0_ce0").
+@bind("sing_ad_58_nl0_ce0", "csv", "data/10k", "sing_ad_58_nl0_ce0.csv").
+@input("sky_ad_15_nl0_ce0").
+@bind("sky_ad_15_nl0_ce0", "csv", "data/10k", "sky_ad_15_nl0_ce0.csv").
+@input("snake_vh_29_nl0_ce0").
+@bind("snake_vh_29_nl0_ce0", "csv", "data/10k", "snake_vh_29_nl0_ce0.csv").
+@input("sneeze_vh_53_nl0_ce0").
+@bind("sneeze_vh_53_nl0_ce0", "csv", "data/10k", "sneeze_vh_53_nl0_ce0.csv").
+@input("society_vi_1_nl0_ce0").
+@bind("society_vi_1_nl0_ce0", "csv", "data/10k", "society_vi_1_nl0_ce0.csv").
+@input("soup_vi_22_nl0_ce0").
+@bind("soup_vi_22_nl0_ce0", "csv", "data/10k", "soup_vi_22_nl0_ce0.csv").
+@input("special_vnm_29_nl0_ce0").
+@bind("special_vnm_29_nl0_ce0", "csv", "data/10k", "special_vnm_29_nl0_ce0.csv").
+@input("spoon_ad_34_nl0_ce0").
+@bind("spoon_ad_34_nl0_ce0", "csv", "data/10k", "spoon_ad_34_nl0_ce0.csv").
+@input("stamp_ad_12_nl0_ce0").
+@bind("stamp_ad_12_nl0_ce0", "csv", "data/10k", "stamp_ad_12_nl0_ce0.csv").
+@input("stick_vh_30_nl0_ce0").
+@bind("stick_vh_30_nl0_ce0", "csv", "data/10k", "stick_vh_30_nl0_ce0.csv").
+@input("sticky_vnm_14_nl0_ce0").
+@bind("sticky_vnm_14_nl0_ce0", "csv", "data/10k", "sticky_vnm_14_nl0_ce0.csv").
+@input("stiff_vi_5_nl0_ce0").
+@bind("stiff_vi_5_nl0_ce0", "csv", "data/10k", "stiff_vi_5_nl0_ce0.csv").
+@input("stone_vi_44_nl0_ce0").
+@bind("stone_vi_44_nl0_ce0", "csv", "data/10k", "stone_vi_44_nl0_ce0.csv").
+@input("stop_vh_21_nl0_ce0").
+@bind("stop_vh_21_nl0_ce0", "csv", "data/10k", "stop_vh_21_nl0_ce0.csv").
+@input("straight_vh_54_nl0_ce0").
+@bind("straight_vh_54_nl0_ce0", "csv", "data/10k", "straight_vh_54_nl0_ce0.csv").
+@input("strong_vi_31_nl0_ce0").
+@bind("strong_vi_31_nl0_ce0", "csv", "data/10k", "strong_vi_31_nl0_ce0.csv").
+@input("structure_vh_22_nl0_ce0").
+@bind("structure_vh_22_nl0_ce0", "csv", "data/10k", "structure_vh_22_nl0_ce0.csv").
+@input("sweet_vnm_37_nl0_ce0").
+@bind("sweet_vnm_37_nl0_ce0", "csv", "data/10k", "sweet_vnm_37_nl0_ce0.csv").
+@input("test_ad_1_nl0_ce0").
+@bind("test_ad_1_nl0_ce0", "csv", "data/10k", "test_ad_1_nl0_ce0.csv").
+@input("test_vi_33_nl0_ce0").
+@bind("test_vi_33_nl0_ce0", "csv", "data/10k", "test_vi_33_nl0_ce0.csv").
+@input("thank_ad_16_nl0_ce0").
+@bind("thank_ad_16_nl0_ce0", "csv", "data/10k", "thank_ad_16_nl0_ce0.csv").
+@input("time_vnm_9_nl0_ce0").
+@bind("time_vnm_9_nl0_ce0", "csv", "data/10k", "time_vnm_9_nl0_ce0.csv").
+@input("tree_vi_39_nl0_ce0").
+@bind("tree_vi_39_nl0_ce0", "csv", "data/10k", "tree_vi_39_nl0_ce0.csv").
+@input("umbrella_vnm_41_nl0_ce0").
+@bind("umbrella_vnm_41_nl0_ce0", "csv", "data/10k", "umbrella_vnm_41_nl0_ce0.csv").
+@input("visit_ad_45_nl0_ce0").
+@bind("visit_ad_45_nl0_ce0", "csv", "data/10k", "visit_ad_45_nl0_ce0.csv").
+@input("visit_vi_26_nl0_ce0").
+@bind("visit_vi_26_nl0_ce0", "csv", "data/10k", "visit_vi_26_nl0_ce0.csv").
+@input("voice_vnm_49_nl0_ce0").
+@bind("voice_vnm_49_nl0_ce0", "csv", "data/10k", "voice_vnm_49_nl0_ce0.csv").
+@input("wall_vi_7_nl0_ce0").
+@bind("wall_vi_7_nl0_ce0", "csv", "data/10k", "wall_vi_7_nl0_ce0.csv").
+@input("want_ad_30_nl0_ce0").
+@bind("want_ad_30_nl0_ce0", "csv", "data/10k", "want_ad_30_nl0_ce0.csv").
+@input("warn_vh_1_nl0_ce0").
+@bind("warn_vh_1_nl0_ce0", "csv", "data/10k", "warn_vh_1_nl0_ce0.csv").
+@input("wash_vh_23_nl0_ce0").
+@bind("wash_vh_23_nl0_ce0", "csv", "data/10k", "wash_vh_23_nl0_ce0.csv").
+@input("watch_vnm_61_nl0_ce0").
+@bind("watch_vnm_61_nl0_ce0", "csv", "data/10k", "watch_vnm_61_nl0_ce0.csv").
+@input("wax_vnm_46_nl0_ce0").
+@bind("wax_vnm_46_nl0_ce0", "csv", "data/10k", "wax_vnm_46_nl0_ce0.csv").
+@input("wear_ad_25_nl0_ce0").
+@bind("wear_ad_25_nl0_ce0", "csv", "data/10k", "wear_ad_25_nl0_ce0.csv").
+@input("whip_vh_11_nl0_ce0").
+@bind("whip_vh_11_nl0_ce0", "csv", "data/10k", "whip_vh_11_nl0_ce0.csv").
+@input("whistle_vh_31_nl0_ce0").
+@bind("whistle_vh_31_nl0_ce0", "csv", "data/10k", "whistle_vh_31_nl0_ce0.csv").
+@input("will_ad_7_nl0_ce0").
+@bind("will_ad_7_nl0_ce0", "csv", "data/10k", "will_ad_7_nl0_ce0.csv").
+@input("wind_vnm_25_nl0_ce0").
+@bind("wind_vnm_25_nl0_ce0", "csv", "data/10k", "wind_vnm_25_nl0_ce0.csv").
+@input("wing_vh_14_nl0_ce0").
+@bind("wing_vh_14_nl0_ce0", "csv", "data/10k", "wing_vh_14_nl0_ce0.csv").
+@input("winter_vh_16_nl0_ce0").
+@bind("winter_vh_16_nl0_ce0", "csv", "data/10k", "winter_vh_16_nl0_ce0.csv").
+@input("woman_vnm_31_nl0_ce0").
+@bind("woman_vnm_31_nl0_ce0", "csv", "data/10k", "woman_vnm_31_nl0_ce0.csv").
+@input("work_vi_18_nl0_ce0").
+@bind("work_vi_18_nl0_ce0", "csv", "data/10k", "work_vi_18_nl0_ce0.csv").
+@input("worm_ad_33_nl0_ce0").
+@bind("worm_ad_33_nl0_ce0", "csv", "data/10k", "worm_ad_33_nl0_ce0.csv").
+@input("worry_ad_4_nl0_ce0").
+@bind("worry_ad_4_nl0_ce0", "csv", "data/10k", "worry_ad_4_nl0_ce0.csv").
+@input("write_vh_56_nl0_ce0").
+@bind("write_vh_56_nl0_ce0", "csv", "data/10k", "write_vh_56_nl0_ce0.csv").

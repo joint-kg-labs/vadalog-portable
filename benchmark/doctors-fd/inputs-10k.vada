@@ -1,0 +1,37 @@
+% ChaseBench "doctors-fd" - source relations, 10k instance.
+% Column order and types follow schema/doctors-fd.s-schema.txt.
+% The data is the one of the `doctors` scenario, unchanged, so these binds
+% point at that directory rather than duplicating 4 MB of CSV.
+% The CSV files carry no header row.
+
+@input("hospital").
+@bind("hospital", "csv", "../doctors/data/10k", "hospital.csv").
+@mapping("hospital", 0, "doctor",   "string").
+@mapping("hospital", 1, "spec",     "string").
+@mapping("hospital", 2, "hospital", "string").
+@mapping("hospital", 3, "npi",      "int").
+@mapping("hospital", 4, "conf",     "double").
+
+@input("medprescription").
+@bind("medprescription", "csv", "../doctors/data/10k", "medprescription.csv").
+@mapping("medprescription", 0, "id",      "int").
+@mapping("medprescription", 1, "patient", "string").
+@mapping("medprescription", 2, "npi",     "int").
+@mapping("medprescription", 3, "doctor",  "string").
+@mapping("medprescription", 4, "spec",    "string").
+@mapping("medprescription", 5, "conf",    "double").
+
+@input("physician").
+@bind("physician", "csv", "../doctors/data/10k", "physician.csv").
+@mapping("physician", 0, "npi",  "int").
+@mapping("physician", 1, "name", "string").
+@mapping("physician", 2, "spec", "string").
+@mapping("physician", 3, "conf", "double").
+
+@input("treatment").
+@bind("treatment", "csv", "../doctors/data/10k", "treatment.csv").
+@mapping("treatment", 0, "id",       "int").
+@mapping("treatment", 1, "patient",  "string").
+@mapping("treatment", 2, "hospital", "string").
+@mapping("treatment", 3, "npi",      "int").
+@mapping("treatment", 4, "conf",     "double").

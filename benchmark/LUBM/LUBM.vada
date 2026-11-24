@@ -1,0 +1,62 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "LUBM" - the 001 instance (one university, ~100k source facts).
+%
+%   python3 ../../dist/vadalog.pyz run LUBM.vada --format csv --out out
+%
+% Run from this directory: the @bind paths are relative to the program file.
+% Every derived target predicate is emitted, which is the whole chased
+% instance; `--format facts` would put all of it on stdout.
+% ---------------------------------------------------------------------------
+@include("inputs-001.vada").
+@include("rules.vada").
+
+@output("administrativeStaff").
+@output("advisor").
+@output("article").
+@output("assistantProfessor").
+@output("associateProfessor").
+@output("chair").
+@output("college").
+@output("course").
+@output("dean").
+@output("degreeFrom").
+@output("department").
+@output("director").
+@output("doctoralDegreeFrom").
+@output("emailAddress").
+@output("employee").
+@output("faculty").
+@output("fullProfessor").
+@output("graduateCourse").
+@output("graduateStudent").
+@output("hasAlumnus").
+@output("headOf").
+@output("lecturer").
+@output("mastersDegreeFrom").
+@output("member").
+@output("memberOf").
+@output("name").
+@output("organization").
+@output("person").
+@output("professor").
+@output("program").
+@output("publication").
+@output("publicationAuthor").
+@output("research").
+@output("researchAssistant").
+@output("researchGroup").
+@output("researchInterest").
+@output("schedule").
+@output("software").
+@output("student").
+@output("subOrganizationOf").
+@output("takesCourse").
+@output("teacherOf").
+@output("teachingAssistant").
+@output("teachingAssistantOf").
+@output("telephone").
+@output("undergraduateDegreeFrom").
+@output("undergraduateStudent").
+@output("university").
+@output("work").
+@output("worksFor").

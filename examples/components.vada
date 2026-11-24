@@ -1,0 +1,16 @@
+% Equality-generating dependencies: label every edge with a fresh null, then
+% unify the labels of edges that share a node.  All three edges end up in one
+% connected component, so they all carry the same marked null.
+edge(1,2).
+edge(2,1).
+edge(1,3).
+
+conn(X,Y,Z) :- edge(X,Y).
+
+Z1=Z2 :- conn(X,Y,Z1), conn(Y,Z,Z2).
+Z1=Z2 :- conn(X,Y,Z1), conn(X,Z,Z2).
+Z1=Z2 :- conn(X,Y,Z1), conn(Z,Y,Z2).
+Z1=Z2 :- conn(X,Y,Z1), conn(Z,X,Z2).
+
+@output("conn").
+@post("conn","orderby(1,2)").

@@ -1,0 +1,226 @@
+% ChaseBench "STB-128" - the 111 source relations, the full instance, about 10 000 rows per relation.
+% Every column is a STRING, so no @mapping is needed: without one the
+% reader types every field as a string. The files carry no header row.
+
+@input("add_su_20_nl0_ce0").
+@bind("add_su_20_nl0_ce0", "csv", "data/10k", "add_su_20_nl0_ce0.csv").
+@input("advertisement_hp_21_nl0_ce0").
+@bind("advertisement_hp_21_nl0_ce0", "csv", "data/10k", "advertisement_hp_21_nl0_ce0.csv").
+@input("advertisement_hp_31_nl0_ce0").
+@bind("advertisement_hp_31_nl0_ce0", "csv", "data/10k", "advertisement_hp_31_nl0_ce0.csv").
+@input("agency_cp_6_nl0_ce0").
+@bind("agency_cp_6_nl0_ce0", "csv", "data/10k", "agency_cp_6_nl0_ce0.csv").
+@input("amount_cp_30_nl0_ce0").
+@bind("amount_cp_30_nl0_ce0", "csv", "data/10k", "amount_cp_30_nl0_ce0.csv").
+@input("amount_hp_6_nl0_ce0").
+@bind("amount_hp_6_nl0_ce0", "csv", "data/10k", "amount_hp_6_nl0_ce0.csv").
+@input("approval_vp_2_nl0_ce0").
+@bind("approval_vp_2_nl0_ce0", "csv", "data/10k", "approval_vp_2_nl0_ce0.csv").
+@input("baby_cp_26_nl0_ce0").
+@bind("baby_cp_26_nl0_ce0", "csv", "data/10k", "baby_cp_26_nl0_ce0.csv").
+@input("basin_vp_14_nl0_ce0").
+@bind("basin_vp_14_nl0_ce0", "csv", "data/10k", "basin_vp_14_nl0_ce0.csv").
+@input("bath_su_8_nl0_ce0").
+@bind("bath_su_8_nl0_ce0", "csv", "data/10k", "bath_su_8_nl0_ce0.csv").
+@input("beautiful_su_16_nl0_ce0").
+@bind("beautiful_su_16_nl0_ce0", "csv", "data/10k", "beautiful_su_16_nl0_ce0.csv").
+@input("begin_hp_27_nl0_ce0").
+@bind("begin_hp_27_nl0_ce0", "csv", "data/10k", "begin_hp_27_nl0_ce0.csv").
+@input("belong_vp_29_nl0_ce0").
+@bind("belong_vp_29_nl0_ce0", "csv", "data/10k", "belong_vp_29_nl0_ce0.csv").
+@input("board_su_1_nl0_ce0").
+@bind("board_su_1_nl0_ce0", "csv", "data/10k", "board_su_1_nl0_ce0.csv").
+@input("bulb_hp_19_nl0_ce0").
+@bind("bulb_hp_19_nl0_ce0", "csv", "data/10k", "bulb_hp_19_nl0_ce0.csv").
+@input("chalk_cp_5_nl0_ce0").
+@bind("chalk_cp_5_nl0_ce0", "csv", "data/10k", "chalk_cp_5_nl0_ce0.csv").
+@input("check_hp_17_nl0_ce0").
+@bind("check_hp_17_nl0_ce0", "csv", "data/10k", "check_hp_17_nl0_ce0.csv").
+@input("cheese_hp_1_nl0_ce0").
+@bind("cheese_hp_1_nl0_ce0", "csv", "data/10k", "cheese_hp_1_nl0_ce0.csv").
+@input("coat_vp_21_nl0_ce0").
+@bind("coat_vp_21_nl0_ce0", "csv", "data/10k", "coat_vp_21_nl0_ce0.csv").
+@input("committee_vp_23_nl0_ce0").
+@bind("committee_vp_23_nl0_ce0", "csv", "data/10k", "committee_vp_23_nl0_ce0.csv").
+@input("condition_vp_10_nl0_ce0").
+@bind("condition_vp_10_nl0_ce0", "csv", "data/10k", "condition_vp_10_nl0_ce0.csv").
+@input("connect_cp_7_nl0_ce0").
+@bind("connect_cp_7_nl0_ce0", "csv", "data/10k", "connect_cp_7_nl0_ce0.csv").
+@input("copy_vp_30_nl0_ce0").
+@bind("copy_vp_30_nl0_ce0", "csv", "data/10k", "copy_vp_30_nl0_ce0.csv").
+@input("degree_hp_13_nl0_ce0").
+@bind("degree_hp_13_nl0_ce0", "csv", "data/10k", "degree_hp_13_nl0_ce0.csv").
+@input("dress_vp_31_nl0_ce0").
+@bind("dress_vp_31_nl0_ce0", "csv", "data/10k", "dress_vp_31_nl0_ce0.csv").
+@input("eat_hp_11_nl0_ce0").
+@bind("eat_hp_11_nl0_ce0", "csv", "data/10k", "eat_hp_11_nl0_ce0.csv").
+@input("experience_cp_11_nl0_ce0").
+@bind("experience_cp_11_nl0_ce0", "csv", "data/10k", "experience_cp_11_nl0_ce0.csv").
+@input("expert_su_27_nl0_ce0").
+@bind("expert_su_27_nl0_ce0", "csv", "data/10k", "expert_su_27_nl0_ce0.csv").
+@input("express_cp_10_nl0_ce0").
+@bind("express_cp_10_nl0_ce0", "csv", "data/10k", "express_cp_10_nl0_ce0.csv").
+@input("fiction_cp_15_nl0_ce0").
+@bind("fiction_cp_15_nl0_ce0", "csv", "data/10k", "fiction_cp_15_nl0_ce0.csv").
+@input("fiction_vp_13_nl0_ce0").
+@bind("fiction_vp_13_nl0_ce0", "csv", "data/10k", "fiction_vp_13_nl0_ce0.csv").
+@input("foot_su_11_nl0_ce0").
+@bind("foot_su_11_nl0_ce0", "csv", "data/10k", "foot_su_11_nl0_ce0.csv").
+@input("fruit_vp_12_nl0_ce0").
+@bind("fruit_vp_12_nl0_ce0", "csv", "data/10k", "fruit_vp_12_nl0_ce0.csv").
+@input("garden_vp_3_nl0_ce0").
+@bind("garden_vp_3_nl0_ce0", "csv", "data/10k", "garden_vp_3_nl0_ce0.csv").
+@input("glove_hp_24_nl0_ce0").
+@bind("glove_hp_24_nl0_ce0", "csv", "data/10k", "glove_hp_24_nl0_ce0.csv").
+@input("grip_su_26_nl0_ce0").
+@bind("grip_su_26_nl0_ce0", "csv", "data/10k", "grip_su_26_nl0_ce0.csv").
+@input("hammer_cp_14_nl0_ce0").
+@bind("hammer_cp_14_nl0_ce0", "csv", "data/10k", "hammer_cp_14_nl0_ce0.csv").
+@input("hate_hp_9_nl0_ce0").
+@bind("hate_hp_9_nl0_ce0", "csv", "data/10k", "hate_hp_9_nl0_ce0.csv").
+@input("hide_su_32_nl0_ce0").
+@bind("hide_su_32_nl0_ce0", "csv", "data/10k", "hide_su_32_nl0_ce0.csv").
+@input("hollow_hp_10_nl0_ce0").
+@bind("hollow_hp_10_nl0_ce0", "csv", "data/10k", "hollow_hp_10_nl0_ce0.csv").
+@input("hollow_hp_12_nl0_ce0").
+@bind("hollow_hp_12_nl0_ce0", "csv", "data/10k", "hollow_hp_12_nl0_ce0.csv").
+@input("hurt_vp_19_nl0_ce0").
+@bind("hurt_vp_19_nl0_ce0", "csv", "data/10k", "hurt_vp_19_nl0_ce0.csv").
+@input("impulse_hp_14_nl0_ce0").
+@bind("impulse_hp_14_nl0_ce0", "csv", "data/10k", "impulse_hp_14_nl0_ce0.csv").
+@input("industry_vp_22_nl0_ce0").
+@bind("industry_vp_22_nl0_ce0", "csv", "data/10k", "industry_vp_22_nl0_ce0.csv").
+@input("involve_cp_25_nl0_ce0").
+@bind("involve_cp_25_nl0_ce0", "csv", "data/10k", "involve_cp_25_nl0_ce0.csv").
+@input("jewel_cp_23_nl0_ce0").
+@bind("jewel_cp_23_nl0_ce0", "csv", "data/10k", "jewel_cp_23_nl0_ce0.csv").
+@input("kind_cp_4_nl0_ce0").
+@bind("kind_cp_4_nl0_ce0", "csv", "data/10k", "kind_cp_4_nl0_ce0.csv").
+@input("last_su_5_nl0_ce0").
+@bind("last_su_5_nl0_ce0", "csv", "data/10k", "last_su_5_nl0_ce0.csv").
+@input("laugh_vp_18_nl0_ce0").
+@bind("laugh_vp_18_nl0_ce0", "csv", "data/10k", "laugh_vp_18_nl0_ce0.csv").
+@input("laugh_vp_25_nl0_ce0").
+@bind("laugh_vp_25_nl0_ce0", "csv", "data/10k", "laugh_vp_25_nl0_ce0.csv").
+@input("lead_cp_21_nl0_ce0").
+@bind("lead_cp_21_nl0_ce0", "csv", "data/10k", "lead_cp_21_nl0_ce0.csv").
+@input("learn_vp_20_nl0_ce0").
+@bind("learn_vp_20_nl0_ce0", "csv", "data/10k", "learn_vp_20_nl0_ce0.csv").
+@input("leather_su_6_nl0_ce0").
+@bind("leather_su_6_nl0_ce0", "csv", "data/10k", "leather_su_6_nl0_ce0.csv").
+@input("letter_vp_1_nl0_ce0").
+@bind("letter_vp_1_nl0_ce0", "csv", "data/10k", "letter_vp_1_nl0_ce0.csv").
+@input("library_su_3_nl0_ce0").
+@bind("library_su_3_nl0_ce0", "csv", "data/10k", "library_su_3_nl0_ce0.csv").
+@input("lock_su_29_nl0_ce0").
+@bind("lock_su_29_nl0_ce0", "csv", "data/10k", "lock_su_29_nl0_ce0.csv").
+@input("love_su_4_nl0_ce0").
+@bind("love_su_4_nl0_ce0", "csv", "data/10k", "love_su_4_nl0_ce0.csv").
+@input("male_su_19_nl0_ce0").
+@bind("male_su_19_nl0_ce0", "csv", "data/10k", "male_su_19_nl0_ce0.csv").
+@input("meal_vp_28_nl0_ce0").
+@bind("meal_vp_28_nl0_ce0", "csv", "data/10k", "meal_vp_28_nl0_ce0.csv").
+@input("mention_vp_5_nl0_ce0").
+@bind("mention_vp_5_nl0_ce0", "csv", "data/10k", "mention_vp_5_nl0_ce0.csv").
+@input("moon_hp_32_nl0_ce0").
+@bind("moon_hp_32_nl0_ce0", "csv", "data/10k", "moon_hp_32_nl0_ce0.csv").
+@input("observation_su_12_nl0_ce0").
+@bind("observation_su_12_nl0_ce0", "csv", "data/10k", "observation_su_12_nl0_ce0.csv").
+@input("orange_su_18_nl0_ce0").
+@bind("orange_su_18_nl0_ce0", "csv", "data/10k", "orange_su_18_nl0_ce0.csv").
+@input("order_su_2_nl0_ce0").
+@bind("order_su_2_nl0_ce0", "csv", "data/10k", "order_su_2_nl0_ce0.csv").
+@input("paint_cp_3_nl0_ce0").
+@bind("paint_cp_3_nl0_ce0", "csv", "data/10k", "paint_cp_3_nl0_ce0.csv").
+@input("pipe_hp_2_nl0_ce0").
+@bind("pipe_hp_2_nl0_ce0", "csv", "data/10k", "pipe_hp_2_nl0_ce0.csv").
+@input("poor_vp_17_nl0_ce0").
+@bind("poor_vp_17_nl0_ce0", "csv", "data/10k", "poor_vp_17_nl0_ce0.csv").
+@input("poor_vp_7_nl0_ce0").
+@bind("poor_vp_7_nl0_ce0", "csv", "data/10k", "poor_vp_7_nl0_ce0.csv").
+@input("probable_vp_6_nl0_ce0").
+@bind("probable_vp_6_nl0_ce0", "csv", "data/10k", "probable_vp_6_nl0_ce0.csv").
+@input("question_su_7_nl0_ce0").
+@bind("question_su_7_nl0_ce0", "csv", "data/10k", "question_su_7_nl0_ce0.csv").
+@input("receive_cp_22_nl0_ce0").
+@bind("receive_cp_22_nl0_ce0", "csv", "data/10k", "receive_cp_22_nl0_ce0.csv").
+@input("regard_cp_16_nl0_ce0").
+@bind("regard_cp_16_nl0_ce0", "csv", "data/10k", "regard_cp_16_nl0_ce0.csv").
+@input("regular_hp_3_nl0_ce0").
+@bind("regular_hp_3_nl0_ce0", "csv", "data/10k", "regular_hp_3_nl0_ce0.csv").
+@input("remain_cp_19_nl0_ce0").
+@bind("remain_cp_19_nl0_ce0", "csv", "data/10k", "remain_cp_19_nl0_ce0.csv").
+@input("require_hp_15_nl0_ce0").
+@bind("require_hp_15_nl0_ce0", "csv", "data/10k", "require_hp_15_nl0_ce0.csv").
+@input("return_vp_8_nl0_ce0").
+@bind("return_vp_8_nl0_ce0", "csv", "data/10k", "return_vp_8_nl0_ce0.csv").
+@input("reveal_cp_2_nl0_ce0").
+@bind("reveal_cp_2_nl0_ce0", "csv", "data/10k", "reveal_cp_2_nl0_ce0.csv").
+@input("rhythm_su_17_nl0_ce0").
+@bind("rhythm_su_17_nl0_ce0", "csv", "data/10k", "rhythm_su_17_nl0_ce0.csv").
+@input("roof_vp_26_nl0_ce0").
+@bind("roof_vp_26_nl0_ce0", "csv", "data/10k", "roof_vp_26_nl0_ce0.csv").
+@input("root_hp_7_nl0_ce0").
+@bind("root_hp_7_nl0_ce0", "csv", "data/10k", "root_hp_7_nl0_ce0.csv").
+@input("rough_vp_15_nl0_ce0").
+@bind("rough_vp_15_nl0_ce0", "csv", "data/10k", "rough_vp_15_nl0_ce0.csv").
+@input("round_su_25_nl0_ce0").
+@bind("round_su_25_nl0_ce0", "csv", "data/10k", "round_su_25_nl0_ce0.csv").
+@input("sea_hp_8_nl0_ce0").
+@bind("sea_hp_8_nl0_ce0", "csv", "data/10k", "sea_hp_8_nl0_ce0.csv").
+@input("seat_su_31_nl0_ce0").
+@bind("seat_su_31_nl0_ce0", "csv", "data/10k", "seat_su_31_nl0_ce0.csv").
+@input("shut_vp_9_nl0_ce0").
+@bind("shut_vp_9_nl0_ce0", "csv", "data/10k", "shut_vp_9_nl0_ce0.csv").
+@input("side_vp_16_nl0_ce0").
+@bind("side_vp_16_nl0_ce0", "csv", "data/10k", "side_vp_16_nl0_ce0.csv").
+@input("silk_vp_4_nl0_ce0").
+@bind("silk_vp_4_nl0_ce0", "csv", "data/10k", "silk_vp_4_nl0_ce0.csv").
+@input("sky_cp_29_nl0_ce0").
+@bind("sky_cp_29_nl0_ce0", "csv", "data/10k", "sky_cp_29_nl0_ce0.csv").
+@input("slow_hp_30_nl0_ce0").
+@bind("slow_hp_30_nl0_ce0", "csv", "data/10k", "slow_hp_30_nl0_ce0.csv").
+@input("snake_vp_11_nl0_ce0").
+@bind("snake_vp_11_nl0_ce0", "csv", "data/10k", "snake_vp_11_nl0_ce0.csv").
+@input("speak_cp_13_nl0_ce0").
+@bind("speak_cp_13_nl0_ce0", "csv", "data/10k", "speak_cp_13_nl0_ce0.csv").
+@input("start_hp_5_nl0_ce0").
+@bind("start_hp_5_nl0_ce0", "csv", "data/10k", "start_hp_5_nl0_ce0.csv").
+@input("steel_hp_22_nl0_ce0").
+@bind("steel_hp_22_nl0_ce0", "csv", "data/10k", "steel_hp_22_nl0_ce0.csv").
+@input("stocking_cp_27_nl0_ce0").
+@bind("stocking_cp_27_nl0_ce0", "csv", "data/10k", "stocking_cp_27_nl0_ce0.csv").
+@input("stop_su_14_nl0_ce0").
+@bind("stop_su_14_nl0_ce0", "csv", "data/10k", "stop_su_14_nl0_ce0.csv").
+@input("study_su_30_nl0_ce0").
+@bind("study_su_30_nl0_ce0", "csv", "data/10k", "study_su_30_nl0_ce0.csv").
+@input("sudden_su_21_nl0_ce0").
+@bind("sudden_su_21_nl0_ce0", "csv", "data/10k", "sudden_su_21_nl0_ce0.csv").
+@input("support_su_10_nl0_ce0").
+@bind("support_su_10_nl0_ce0", "csv", "data/10k", "support_su_10_nl0_ce0.csv").
+@input("test_cp_1_nl0_ce0").
+@bind("test_cp_1_nl0_ce0", "csv", "data/10k", "test_cp_1_nl0_ce0.csv").
+@input("thin_su_15_nl0_ce0").
+@bind("thin_su_15_nl0_ce0", "csv", "data/10k", "thin_su_15_nl0_ce0.csv").
+@input("toe_cp_24_nl0_ce0").
+@bind("toe_cp_24_nl0_ce0", "csv", "data/10k", "toe_cp_24_nl0_ce0.csv").
+@input("touch_cp_12_nl0_ce0").
+@bind("touch_cp_12_nl0_ce0", "csv", "data/10k", "touch_cp_12_nl0_ce0.csv").
+@input("train_cp_8_nl0_ce0").
+@bind("train_cp_8_nl0_ce0", "csv", "data/10k", "train_cp_8_nl0_ce0.csv").
+@input("try_hp_18_nl0_ce0").
+@bind("try_hp_18_nl0_ce0", "csv", "data/10k", "try_hp_18_nl0_ce0.csv").
+@input("violent_hp_4_nl0_ce0").
+@bind("violent_hp_4_nl0_ce0", "csv", "data/10k", "violent_hp_4_nl0_ce0.csv").
+@input("walk_hp_28_nl0_ce0").
+@bind("walk_hp_28_nl0_ce0", "csv", "data/10k", "walk_hp_28_nl0_ce0.csv").
+@input("weight_su_13_nl0_ce0").
+@bind("weight_su_13_nl0_ce0", "csv", "data/10k", "weight_su_13_nl0_ce0.csv").
+@input("whip_hp_16_nl0_ce0").
+@bind("whip_hp_16_nl0_ce0", "csv", "data/10k", "whip_hp_16_nl0_ce0.csv").
+@input("will_su_23_nl0_ce0").
+@bind("will_su_23_nl0_ce0", "csv", "data/10k", "will_su_23_nl0_ce0.csv").
+@input("win_su_9_nl0_ce0").
+@bind("win_su_9_nl0_ce0", "csv", "data/10k", "win_su_9_nl0_ce0.csv").
+@input("window_cp_9_nl0_ce0").
+@bind("window_cp_9_nl0_ce0", "csv", "data/10k", "window_cp_9_nl0_ce0.csv").

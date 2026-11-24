@@ -1,0 +1,15 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "doctors-fd" - 100k instance.
+%
+%   python3 ../../dist/vadalog.pyz run doctors-fd-100k.vada                % stdout
+%   python3 ../../dist/vadalog.pyz run doctors-fd-100k.vada --format csv --out out
+%
+% Run from this directory: the @bind paths are relative to the program file
+% and reach into ../doctors/data.
+% ---------------------------------------------------------------------------
+@include("inputs-100k.vada").
+@include("rules.vada").
+
+@output("doctor").
+@output("prescription").
+@output("targethospital").

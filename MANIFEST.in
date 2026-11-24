@@ -1,0 +1,10 @@
+# What a source distribution must not carry.
+#
+# The wheel and the single-file builds are safe by construction: pyproject.toml
+# names the packages one by one with include-package-data off, and
+# tools/build_pyz.py stages only the package and the curated examples. The
+# sdist is the loose end, being built from the checkout, so the two directories
+# that exist only for whoever clones the repository are pruned by hand.
+prune benchmark
+prune assets
+global-exclude .DS_Store *.pyc

@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Written by examples/csv_pipeline.vada when it is run
+examples/exposure.csv
+
+# Local assets — large, never pushed
+assets/
+
+# Reasoner output directories: every `--out` of a benchmark or of an ad-hoc run
+out/
+out-*/
+
+# ChaseBench data too large to version: `sh fetch-data.sh` in each of these
+# directories downloads it from the benchmark and unpacks it here
+benchmark/STB-128/data/
+benchmark/Ontology-256/data/
+
+# Working notes and generated outputs from Claude sessions
+Claude outputs/
+
+# macOS
+.DS_Store

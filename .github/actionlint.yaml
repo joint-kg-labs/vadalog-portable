@@ -1,0 +1,9 @@
+# actionlint keeps its own list of GitHub-hosted runner labels, and a released
+# version of it necessarily predates the newer images: 1.7.7, for instance,
+# still offers `macos-13` and `ubuntu-20.04` — both retired — and does not know
+# `macos-15-intel`, which replaced them for Intel builds.  Listing the label
+# here is the documented way to teach it one, and stops a stale linter from
+# reporting a working workflow as broken.
+self-hosted-runner:
+  labels:
+    - macos-15-intel

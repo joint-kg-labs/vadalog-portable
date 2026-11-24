@@ -1,0 +1,68 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "doctors" - the nine benchmark queries evaluated on the chased
+% instance (10k). Transcribed from chasebench/scenarios/doctors/queries/10k/.
+%
+%   python3 vadalog.pyz run doctors-queries.vada
+%   python3 vadalog.pyz run doctors-queries.vada --format csv --out out-queries
+%
+% The queries are ordinary non-recursive rules: they sit in a stratum above the
+% target predicates, so they see the instance only after the EGDs have merged
+% and resolved the marked nulls.
+% ---------------------------------------------------------------------------
+@include("inputs-10k.vada").
+@include("rules.vada").
+
+q01(DocSpec) :-
+    doctor(DocNpi, DocName, DocSpec, DocHosp, DocConf),
+    targethospital(DocName, ThSpec, ThHosp, ThNpi, ThConf),
+    prescription(PrId, PrPatient, DocNpi, PrConf).
+
+q02(DocName, PrPatient, ThHosp) :-
+    targethospital(ThDoc, ThSpec, ThHosp, ThNpi, ThConf),
+    doctor(DocNpi, DocName, ThSpec, DocHosp, DocConf),
+    prescription(PrId, PrPatient, DocNpi, PrConf).
+
+q03(PrId, ThDoc) :-
+    doctor(DocNpi, DocName, DocSpec, DocHosp, DocConf),
+    targethospital(ThDoc, ThSpec, ThHosp, DocNpi, ThConf),
+    prescription(PrId, PrPatient, DocNpi, PrConf).
+
+q04(PrId, ThSpec) :-
+    prescription(PrId, PrPatient, PrNpi, PrConf),
+    targethospital(ThDoc, ThSpec, ThHosp, PrNpi, ThConf),
+    doctor(DocNpi, DocName, ThSpec, DocHosp, DocConf).
+
+q05(DocSpec, ThDoc, DocNpi) :-
+    prescription(PrId, PrPatient, PrNpi, PrConf),
+    targethospital(ThDoc, ThSpec, ThHosp, PrNpi, ThConf),
+    doctor(DocNpi, DocName, DocSpec, ThHosp, DocConf).
+
+q06(PrId, PrPatient) :-
+    doctor(DocNpi, DocName, DocSpec, DocHosp, DocConf),
+    targethospital(DocName, ThSpec, ThHosp, ThNpi, ThConf),
+    prescription(PrId, PrPatient, DocNpi, PrConf).
+
+q07(DocName, PrNpi) :-
+    prescription(PrId, PrPatient, PrNpi, PrConf),
+    doctor(PrNpi, DocName, DocSpec, DocHosp, DocConf),
+    targethospital(DocName, ThSpec, ThHosp, ThNpi, ThConf).
+
+q08(PrId, DocHosp, DocSpec, DocName, ThDoc) :-
+    doctor(DocNpi, DocName, DocSpec, DocHosp, DocConf),
+    targethospital(ThDoc, DocSpec, "HH65795", ThNpi, ThConf),
+    prescription(PrId, PrPatient, ThNpi, PrConf).
+
+q09(ThNpi, PrId, ThSpec, PrPatient, DocHosp) :-
+    targethospital(ThDoc, ThSpec, "HH30727", ThNpi, ThConf),
+    doctor(ThNpi, DocName, DocSpec, DocHosp, DocConf),
+    prescription(PrId, PrPatient, ThNpi, PrConf).
+
+@output("q01").
+@output("q02").
+@output("q03").
+@output("q04").
+@output("q05").
+@output("q06").
+@output("q07").
+@output("q08").
+@output("q09").

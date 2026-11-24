@@ -1,0 +1,19 @@
+% Company control: a company controls another when it holds, directly or via
+% companies it already controls, more than 50% of it.  The recursion and the
+% aggregation are mutually dependent, which is what monotonic aggregates are for.
+@library("m:", "monotonic").
+
+owns("source", "c1", 1.0).
+owns("source", "c2", 1.0).
+owns("source", "c3", 1.0).
+owns("c1", "c4", 0.3).
+owns("c2", "c4", 0.3).
+owns("c4", "sink", 0.3).
+owns("c3", "sink", 0.3).
+
+controls(I, I), controls(J, J) :- owns(I, J, W).
+controls(I, K) :- controls(I, J), owns(J, K, W2),
+                  W = m:sum(W2, [I, K], []), W > 0.5.
+
+@output("controls").
+@post("controls","orderby(1,2)").

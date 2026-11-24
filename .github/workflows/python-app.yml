@@ -1,0 +1,106 @@
+# This workflow lints the engine and runs its test suite on Linux and macOS.
+# The companion python-windows.yml runs the same checks on Windows.
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  lint:
+
+    runs-on: ubuntu-latest
+    # A ceiling, so a wedged step fails visibly rather than holding a
+    # runner for the default six hours.
+    timeout-minutes: 15
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.13"
+    - name: Install flake8
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  test:
+
+    runs-on: ${{ matrix.os }}
+    # A ceiling, so a wedged step fails visibly rather than holding a
+    # runner for the default six hours.
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # The oldest and the newest interpreter the project claims to support.
+        python-version: ["3.9", "3.13"]
+        exclude:
+          # The hosted macOS runners are arm64 and have no 3.9 build available.
+          - os: macos-latest
+            python-version: "3.9"
+          # ubuntu-latest is Ubuntu 26.04, which has no 3.9 build either
+          # (3.9 is end-of-life), so 3.9 runs on 24.04 instead.
+          - os: ubuntu-latest
+            python-version: "3.9"
+        include:
+          - os: ubuntu-24.04
+            python-version: "3.9"
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      # The engine has no runtime dependencies at all; pytest is the only one.
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+
+    - name: Test with pytest
+      # tests/harness.py puts src/ on sys.path itself, so no install is needed.
+      run: python -m pytest -q
+
+    - name: Run the examples without installing
+      run: |
+        for f in examples/*.vada; do
+          echo "== $f"
+          ./vadalog run "$f" || exit 1
+        done
+
+    - name: Install the package and run the console script
+      run: |
+        python -m pip install .
+        vadalog run examples/reachability.vada
+
+    - name: Write non-ASCII output to a redirected file
+      # Parity with the Windows job, where a redirected stdout uses the locale
+      # encoding rather than UTF-8.
+      env:
+        PYTHONPATH: src
+      run: |
+        printf '@output("p"). p("citt\xc3\xa0", "na\xc3\xafve").\n' > accents.vada
+        python -m vadalog run accents.vada > out.txt
+        cat out.txt

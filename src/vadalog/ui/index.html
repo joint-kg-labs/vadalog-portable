@@ -1,0 +1,1695 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vadalog</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg:#fbfbfa; --panel:#ffffff; --edge:#e3e2df; --edge-soft:#efeeec;
+    --ink:#1c1b19; --ink-soft:#6d6a64; --ink-faint:#9b978f;
+    --accent:#8a5a2b; --accent-bg:#f4ece3;
+    --ok:#2f6f4f; --warn:#9a6b12; --err:#a3372c; --err-bg:#fbeeec; --sel:#e8e5df;
+    --t-comment:#8f8b83; --t-string:#2f6f4f; --t-number:#7a4fa3; --t-var:#1f5f8b;
+    --t-pred:#1c1b19; --t-ann:#8a5a2b; --t-agg:#a3372c; --t-kw:#a3372c;
+    --t-op:#6d6a64; --t-null:#7a4fa3;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --fs:13px; --lh:20px; --pad-y:10px; --pad-x:14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#17171a; --panel:#1d1d21; --edge:#2e2e34; --edge-soft:#26262b;
+      --ink:#e6e4e0; --ink-soft:#9c988f; --ink-faint:#6b6760;
+      --accent:#d4a373; --accent-bg:#2b241c;
+      --ok:#6fbf95; --warn:#d8b25f; --err:#e2867a; --err-bg:#2e1e1c; --sel:#2f2f36;
+      --t-comment:#6b6760; --t-string:#7fc09b; --t-number:#c1a0e0; --t-var:#82b8dd;
+      --t-pred:#e6e4e0; --t-ann:#d4a373; --t-agg:#e2867a; --t-kw:#e2867a;
+      --t-op:#9c988f; --t-null:#c1a0e0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#17171a; --panel:#1d1d21; --edge:#2e2e34; --edge-soft:#26262b;
+    --ink:#e6e4e0; --ink-soft:#9c988f; --ink-faint:#6b6760;
+    --accent:#d4a373; --accent-bg:#2b241c;
+    --ok:#6fbf95; --warn:#d8b25f; --err:#e2867a; --err-bg:#2e1e1c; --sel:#2f2f36;
+    --t-comment:#6b6760; --t-string:#7fc09b; --t-number:#c1a0e0; --t-var:#82b8dd;
+    --t-pred:#e6e4e0; --t-ann:#d4a373; --t-agg:#e2867a; --t-kw:#e2867a;
+    --t-op:#9c988f; --t-null:#c1a0e0;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:13px/1.5 var(--sans); overflow:hidden; }
+  .app { display:flex; flex-direction:column; height:100vh; }
+
+  header { display:flex; align-items:center; gap:10px; padding:0 10px;
+           height:40px; flex:0 0 auto; background:var(--panel);
+           border-bottom:1px solid var(--edge); position:relative; }
+  .brand { font-weight:600; letter-spacing:.02em; font-size:12.5px; white-space:nowrap; }
+  .brand span { color:var(--accent); }
+  .ro { font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+        color:var(--accent); background:var(--accent-bg); padding:2px 6px;
+        border-radius:4px; white-space:nowrap; }
+  .ro[hidden] { display:none; }
+  select, button, input { font:inherit; color:var(--ink); background:var(--panel);
+           border:1px solid var(--edge); border-radius:6px; padding:4px 9px; }
+  select, button { cursor:pointer; }
+  select { font-size:12px; max-width:32vw; }
+  button:hover:not(:disabled) { background:var(--edge-soft); }
+  button:active:not(:disabled) { transform:translateY(.5px); }
+  button:disabled { opacity:.5; cursor:default; }
+  button.primary { background:var(--accent); border-color:var(--accent);
+                   color:#fff; font-weight:500; }
+  button.primary:hover:not(:disabled) { filter:brightness(1.07); background:var(--accent); }
+  button kbd { font:500 10px/1 var(--mono); opacity:.75; margin-left:5px; }
+  .spacer { flex:1 1 auto; }
+  .icon { width:28px; padding:4px 0; text-align:center; font-size:13px;
+          display:inline-flex; align-items:center; justify-content:center; }
+  .ico { width:16px; height:16px; flex:0 0 auto; fill:none; stroke:currentColor;
+         stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* New / Open / Save, and the name of the open file */
+  .filebar { display:flex; align-items:center; gap:2px; min-width:0; }
+  .filebar [hidden] { display:none; }
+  .filebar .icon { border-color:transparent; background:none; color:var(--ink-soft); }
+  .filebar .icon:hover:not(:disabled) { background:var(--edge-soft); color:var(--ink); }
+  #saveBtn:not(:disabled) { color:var(--warn); }
+  .fname { margin-left:4px; padding:4px 6px; border-radius:5px; cursor:pointer;
+           font:12px/1.2 var(--mono); color:var(--ink); white-space:nowrap;
+           overflow:hidden; text-overflow:ellipsis; max-width:34vw; }
+  .fname:hover { background:var(--edge-soft); }
+  .fname .dir { color:var(--ink-faint); }
+  .fname.untitled { color:var(--ink-faint); }
+  .fname.dirty::after { content:"\25CF"; color:var(--warn); margin-left:6px; font-size:9px;
+                        vertical-align:1px; }
+
+  /* The file dialog */
+  .modal-back { position:fixed; inset:0; z-index:40; background:rgba(20,18,15,.28);
+                display:flex; align-items:flex-start; justify-content:center;
+                padding:9vh 10px 10px; }
+  .modal-back[hidden] { display:none; }
+  .modal { width:min(540px, 100%); max-height:100%; display:flex; flex-direction:column;
+           background:var(--panel); border:1px solid var(--edge); border-radius:10px;
+           box-shadow:0 18px 50px rgba(0,0,0,.25); padding:12px 14px 14px; }
+  .modal h3 { margin:0 0 10px; font-size:12px; letter-spacing:.04em;
+              text-transform:uppercase; color:var(--ink-soft); }
+  .fd-nav { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .fd-nav .icon { flex:0 0 auto; }
+  .crumbs { display:flex; align-items:center; flex-wrap:wrap; gap:1px; min-width:0;
+            font-size:12.5px; }
+  .crumbs button { border:0; background:none; padding:2px 5px; border-radius:4px;
+                   color:var(--ink-soft); }
+  .crumbs button:last-child { color:var(--ink); font-weight:600; }
+  .crumbs .sep { color:var(--ink-faint); }
+  .fd-list { height:300px; max-height:45vh; overflow:auto; outline:none; padding:3px;
+             border:1px solid var(--edge); border-radius:6px; background:var(--bg); }
+  .fd-list:focus-visible { border-color:var(--accent); }
+  .fd-item { display:flex; align-items:center; gap:8px; padding:4px 8px; border-radius:5px;
+             font:12.5px/1.5 var(--mono); white-space:nowrap; cursor:default;
+             -webkit-user-select:none; user-select:none; }
+  .fd-item:hover { background:var(--edge-soft); }
+  .fd-item.sel { background:var(--accent-bg); }
+  .fd-item.dir .ico { color:var(--accent); fill:var(--accent-bg); }
+  .fd-item.file .ico { color:var(--ink-faint); }
+  .fd-item.muted { color:var(--ink-faint); }
+  .fd-item .nm { overflow:hidden; text-overflow:ellipsis; }
+  .fd-item .sz { margin-left:auto; padding-left:12px; color:var(--ink-faint); font-size:11px; }
+  .fd-empty { color:var(--ink-faint); font-size:12.5px; padding:10px; }
+  .fd-name { display:flex; align-items:center; gap:10px; margin-top:10px;
+             font-size:12.5px; color:var(--ink-soft); }
+  .fd-name[hidden] { display:none; }
+  .fd-name input { flex:1 1 auto; min-width:0; font:12.5px/1.4 var(--mono); }
+  .modal .hint { font-size:11.5px; color:var(--ink-faint); margin:7px 0 10px;
+                 min-height:1.3em; overflow-wrap:anywhere; }
+  .modal .hint.warn { color:var(--warn); }
+  .modal .actions { display:flex; justify-content:flex-end; gap:8px; }
+
+  /* ------------------------------------------------------------------ *
+   * Editor.  Two layers -- a coloured <pre> and a transparent <textarea>
+   * on top of it -- so every property that affects glyph position must be
+   * identical on both, and nothing inside the highlight may change the
+   * advance width.  That means no bold, no italic, no ligatures, and no
+   * <code> wrapper (the user-agent stylesheet re-applies a generic
+   * monospace family to <code>, which is what broke the alignment).
+   * ------------------------------------------------------------------ */
+  .editor { flex:1 1 auto; min-height:80px; display:flex;
+            background:var(--panel); overflow:hidden; }
+
+  .gutter { flex:0 0 46px; position:relative; overflow:hidden;
+            border-right:1px solid var(--edge-soft); }
+  .gutter-inner { position:absolute; top:0; left:0; right:8px;
+                  padding:var(--pad-y) 0; text-align:right;
+                  color:var(--ink-faint); will-change:transform; }
+  .gutter .ln.bad { color:var(--err); font-weight:700; }
+
+  .code { position:relative; flex:1 1 auto; overflow:hidden; }
+
+  .hl, #ed, .gutter-inner {
+    font-family:var(--mono); font-size:var(--fs); line-height:var(--lh);
+    font-weight:400; font-style:normal; letter-spacing:0;
+    font-variant-ligatures:none; font-kerning:none; tab-size:2;
+  }
+  .hl, #ed {
+    position:absolute; inset:0; margin:0; border:0; box-sizing:border-box;
+    padding:var(--pad-y) var(--pad-x);
+    white-space:pre; word-wrap:normal; overflow-wrap:normal;
+  }
+  .hl { overflow:hidden; pointer-events:none; color:var(--ink);
+        -webkit-user-select:none; user-select:none; }
+  .hl span { font:inherit; letter-spacing:inherit; }
+  #ed { overflow:auto; background:transparent; color:transparent;
+        caret-color:var(--ink); resize:none; outline:none; }
+  #ed::selection { background:var(--sel); color:transparent; }
+  #ed::placeholder { color:var(--ink-faint); }
+
+  .hl .c-comment{color:var(--t-comment)} .hl .c-string{color:var(--t-string)}
+  .hl .c-number{color:var(--t-number)}   .hl .c-var{color:var(--t-var)}
+  .hl .c-anon{color:var(--ink-faint)}    .hl .c-pred{color:var(--t-pred)}
+  .hl .c-ann{color:var(--t-ann)}         .hl .c-agg{color:var(--t-agg)}
+  .hl .c-fn{color:var(--t-var)}          .hl .c-kw{color:var(--t-kw)}
+  .hl .c-op{color:var(--t-op)}           .hl .c-null{color:var(--t-null)}
+  .hl .c-impl{color:var(--t-agg)}
+  .hl .errline{background:var(--err-bg)}
+
+  .split { flex:0 0 auto; height:6px; cursor:row-resize; background:var(--bg);
+           border-top:1px solid var(--edge); border-bottom:1px solid var(--edge); }
+  .split:hover { background:var(--edge-soft); }
+
+  .results { flex:0 0 auto; height:240px; min-height:60px; display:flex;
+             flex-direction:column; background:var(--panel); overflow:hidden; }
+  .tabs { display:flex; align-items:center; gap:2px; padding:0 8px; height:32px;
+          flex:0 0 auto; border-bottom:1px solid var(--edge-soft); }
+  .tab { font-size:12px; padding:4px 9px; border-radius:5px; color:var(--ink-soft);
+         cursor:pointer; border:0; background:none; white-space:nowrap; }
+  .tab:hover { background:var(--edge-soft); }
+  .tab.on { background:var(--edge-soft); color:var(--ink); font-weight:600; }
+  .badge { display:inline-block; margin-left:5px; padding:0 5px; border-radius:8px;
+           font-size:10px; font-weight:700; background:var(--edge); color:var(--ink-soft); }
+  .badge[hidden] { display:none; }
+  .badge.err { background:var(--err); color:#fff; }
+  .badge.warn { background:var(--warn); color:#fff; }
+  .meta { margin-left:auto; font-size:11.5px; color:var(--ink-soft);
+          font-family:var(--mono); white-space:nowrap; }
+  .pane { flex:1 1 auto; overflow:auto; padding:8px 12px 14px;
+          font:var(--fs)/var(--lh) var(--mono); }
+  .pane[hidden] { display:none; }
+  .rel { margin:0 0 10px; }
+  .rel h4 { margin:0 0 2px; font:600 11px/1.5 var(--sans); color:var(--ink-soft);
+            letter-spacing:.03em; }
+  .rel h4 em { font-style:normal; color:var(--ink-faint); font-weight:400; }
+  .fact .n { color:var(--t-null); }
+  .note { font-family:var(--sans); font-size:12px; color:var(--ink-faint);
+          padding:2px 0 6px; }
+  .note.written { color:var(--ok); }
+  .diag { display:flex; gap:8px; padding:3px 0; align-items:baseline; }
+  .diag .where { color:var(--accent); cursor:pointer; text-decoration:underline;
+                 text-underline-offset:2px; white-space:nowrap; }
+  .diag.error .kind { color:var(--err); font-weight:700; }
+  .diag.warn .kind { color:var(--warn); font-weight:700; }
+  .diag .kind { font-size:11px; text-transform:uppercase; letter-spacing:.04em;
+                white-space:nowrap; }
+  .diag .msg { font-family:var(--sans); font-size:12.5px; }
+  .empty { color:var(--ink-faint); font-family:var(--sans); font-size:12.5px; }
+  table.stats { border-collapse:collapse; font-size:12px; }
+  table.stats td { padding:2px 18px 2px 0; }
+  table.stats td:first-child { color:var(--ink-soft); font-family:var(--sans); }
+  pre.text { margin:0; white-space:pre-wrap; font:var(--fs)/var(--lh) var(--mono); }
+
+  .pop { position:absolute; right:10px; top:44px; z-index:20; background:var(--panel);
+         border:1px solid var(--edge); border-radius:10px; padding:12px 14px 14px;
+         box-shadow:0 12px 34px rgba(0,0,0,.16);
+         max-height:calc(100vh - 120px); overflow:auto; }
+  .pop[hidden] { display:none; }
+  .pop h3 { margin:0 0 8px; font-size:12px; letter-spacing:.04em;
+            text-transform:uppercase; color:var(--ink-soft); }
+  #help { width:min(430px, calc(100vw - 20px)); }
+  #help section { margin-bottom:12px; }
+  #help dl { display:grid; grid-template-columns:auto 1fr; gap:3px 12px; margin:0; }
+  #help dt { font-family:var(--mono); font-size:12px; color:var(--t-var); white-space:nowrap; }
+  #help dd { margin:0; font-size:12.5px; color:var(--ink-soft); }
+  kbd { font:500 11px/1 var(--mono); border:1px solid var(--edge);
+        border-bottom-width:2px; border-radius:4px; padding:2px 5px; color:var(--ink); }
+  #settings { width:min(280px, calc(100vw - 20px)); }
+  #settings label { display:flex; align-items:center; justify-content:space-between;
+                    gap:10px; font-size:12.5px; color:var(--ink-soft);
+                    margin-bottom:8px; }
+  #settings input[type=number] { width:92px; font-size:12px; text-align:right; }
+  #settings .hint { font-size:11.5px; color:var(--ink-faint); margin:6px 0 0; }
+  #params { width:min(360px, calc(100vw - 20px)); }
+  #params label { display:flex; align-items:center; justify-content:space-between;
+                  gap:10px; font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  #params label code { font-family:var(--mono); color:var(--t-var); }
+  #params label small { color:var(--ink-faint); margin-left:4px; }
+  #params input { flex:0 1 190px; font:12px var(--mono); }
+  #params input.missing { border-color:var(--warn); }
+  #params .hint { font-size:11.5px; color:var(--ink-faint); margin:6px 0 0; }
+  #params .hint code { font-family:var(--mono); }
+
+  #source, #sink { width:min(560px, calc(100vw - 20px)); }
+  .pop .row { display:flex; align-items:center; justify-content:space-between;
+              gap:12px; margin-bottom:7px; font-size:12.5px; color:var(--ink-soft); }
+  .pop .row[hidden] { display:none; }
+  .pop .row > select, .pop .row > input[type=text] { flex:0 1 330px; font-size:12px; }
+  .pop .row > select:disabled, .pop .row > option:disabled { opacity:.6; }
+  .pop .row > .picker { flex:0 1 330px; display:flex; align-items:center; gap:6px; min-width:0; }
+  .picker .pick-path { flex:1 1 auto; min-width:0; padding:4px 8px; cursor:pointer;
+        border:1px solid var(--edge); border-radius:6px; background:var(--bg);
+        font:12px/1.4 var(--mono); color:var(--ink); white-space:nowrap;
+        overflow:hidden; text-overflow:ellipsis; }
+  .picker .pick-path:hover { border-color:var(--ink-faint); }
+  .picker .pick-path.empty { color:var(--ink-faint); font-family:var(--sans); }
+  .picker .pick-path .dir { color:var(--ink-faint); }
+  .picker button { flex:0 0 auto; display:inline-flex; align-items:center; gap:5px;
+        font-size:12px; white-space:nowrap; }
+  table.cols { width:100%; border-collapse:collapse; margin:4px 0 10px; }
+  table.cols th { text-align:left; font:600 10px/1.7 var(--sans);
+        letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint);
+        border-bottom:1px solid var(--edge-soft); padding:0 8px 3px 0; }
+  table.cols td { padding:2px 8px 2px 0; vertical-align:middle; }
+  table.cols td.pos { width:1.6em; font-family:var(--mono); font-size:12px;
+        color:var(--ink-faint); }
+  table.cols input.cname { width:100%; font-family:var(--mono); font-size:12px;
+        padding:2px 6px; }
+  table.cols select.ctype { font-size:12px; padding:2px 4px; width:100%; }
+  table.cols td.sample { max-width:130px; overflow:hidden; white-space:nowrap;
+        text-overflow:ellipsis; font-family:var(--mono); font-size:12px;
+        color:var(--ink-faint); }
+  .pop pre.gen { margin:0; padding:8px 10px; background:var(--bg);
+        border:1px solid var(--edge-soft); border-radius:6px; max-height:148px;
+        overflow:auto; font:var(--fs)/var(--lh) var(--mono); white-space:pre;
+        color:var(--ink); }
+  .pop .hint { font-size:11.5px; color:var(--ink-faint); margin:7px 0 10px; }
+  .pop .hint.warn { color:var(--warn); }
+  .pop .actions { display:flex; justify-content:flex-end; gap:8px; }
+
+  @media (max-width:760px) {
+    header { flex-wrap:wrap; height:auto; padding:6px 8px; gap:6px; }
+    .brand { order:-1; }
+    select { max-width:52vw; }
+    .fname { max-width:48vw; }
+    button kbd { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">vada<span>log</span></div>
+    <span class="ro" id="ro" hidden>read-only</span>
+    <div class="filebar">
+      <button class="icon" id="newBtn" title="New file"><svg class="ico" viewBox="0 0 16 16"><path d="M9 1.75H4.5A1.5 1.5 0 0 0 3 3.25v9.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5V5.75z"/><path d="M9 1.75v4h4"/><path d="M8 8v4.5M5.75 10.25h4.5"/></svg></button>
+      <button class="icon" id="openBtn" title="Open"><svg class="ico" viewBox="0 0 16 16"><path d="M1.75 4.25a1.5 1.5 0 0 1 1.5-1.5h3l1.5 1.75h5a1.5 1.5 0 0 1 1.5 1.5v5.75a1.5 1.5 0 0 1-1.5 1.5h-9.5a1.5 1.5 0 0 1-1.5-1.5z"/></svg></button>
+      <button class="icon" id="saveBtn" title="Nothing to save" disabled><svg class="ico" viewBox="0 0 16 16"><path d="M2.75 3.25a1.5 1.5 0 0 1 1.5-1.5h6.5l2.5 2.5v8.5a1.5 1.5 0 0 1-1.5 1.5h-7.5a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M5.25 1.75v3h4.5v-3"/><path d="M5 14.25V9.75h6v4.5"/></svg></button>
+      <span class="fname untitled" id="fname" title="Open a file">untitled</span>
+    </div>
+    <div class="spacer"></div>
+    <button class="primary" id="run">Run<kbd id="kRun">&#8984;&#9166;</kbd></button>
+    <button id="check">Check</button>
+    <button id="explain">Explain</button>
+    <button id="sourceBtn" title="Read a relation from a file">+&#8202;Source</button>
+    <button id="sinkBtn" title="Write a relation out">+&#8202;Output</button>
+    <button id="paramsBtn" title="Parameters: values for the ${name} placeholders" hidden>${&#8202;}<span class="badge warn" id="paramsBadge" hidden></span></button>
+    <button class="icon" id="settingsBtn" title="Limits">&#9881;</button>
+    <button class="icon" id="helpBtn" title="Language reference">?</button>
+    <button class="icon" id="theme" title="Light / dark">&#9680;</button>
+
+    <div class="pop" id="settings" hidden>
+      <h3>Limits</h3>
+      <label>Timeout (s)<input type="number" id="optTimeout" min="0" max="300" step="1" value="10"></label>
+      <label>Max facts<input type="number" id="optFacts" min="0" step="1000" value="200000"></label>
+      <label>Allow unstratified<input type="checkbox" id="optUnstrat"></label>
+      <p class="hint">A run that trips a limit returns an error rather than
+         hanging the page. Output is truncated at 2,000 facts per relation;
+         bind an output to a CSV file to get all of it.</p>
+    </div>
+
+    <div class="pop" id="params" hidden>
+      <h3>Parameters</h3>
+      <div id="paramRows"></div>
+      <p class="hint">Each value is a Vadalog literal: <code>42</code>, <code>0.5</code>,
+         <code>"text"</code>, <code>2024-01-31</code>, <code>#T</code>. A placeholder
+         used only inside strings is left as written when it has no value.</p>
+    </div>
+
+    <div class="pop" id="source" hidden>
+      <h3>Add data source</h3>
+      <div class="row">Kind
+        <select id="srcKind">
+          <option value="csv">CSV file — local</option>
+          <option value="http" disabled>CSV over HTTP — not implemented</option>
+          <option value="postgres" disabled>PostgreSQL — not implemented</option>
+          <option value="sqlite" disabled>SQLite — not implemented</option>
+          <option value="neo4j" disabled>Neo4j — not implemented</option>
+        </select>
+      </div>
+      <div class="row">File
+        <div class="picker"><span class="pick-path empty" id="srcPath" tabindex="0"></span><button id="srcBrowse"><svg class="ico" viewBox="0 0 16 16"><path d="M1.75 4.25a1.5 1.5 0 0 1 1.5-1.5h3l1.5 1.75h5a1.5 1.5 0 0 1 1.5 1.5v5.75a1.5 1.5 0 0 1-1.5 1.5h-9.5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>Browse…</button></div>
+      </div>
+      <div class="row">Delimiter
+        <select id="srcDelim">
+          <option value=",">comma ,</option>
+          <option value=";">semicolon ;</option>
+          <option value="\t">tab</option>
+          <option value="|">pipe |</option>
+        </select>
+      </div>
+      <div class="row">Relation
+        <input type="text" id="srcPred" spellcheck="false" autocomplete="off">
+      </div>
+      <div class="row">First row names the columns
+        <input type="checkbox" id="srcHeader">
+      </div>
+      <div class="row">Type the columns with @mapping
+        <input type="checkbox" id="srcTyped" checked>
+      </div>
+      <div id="srcCols"></div>
+      <pre class="gen" id="srcCode"></pre>
+      <p class="hint" id="srcHint"></p>
+      <div class="actions">
+        <button id="srcCancel">Cancel</button>
+        <button class="primary" id="srcInsert">Insert</button>
+      </div>
+    </div>
+
+    <div class="pop" id="sink" hidden>
+      <h3>Add output</h3>
+      <div class="row">Kind
+        <select id="outKind">
+          <option value="csv">CSV file — local</option>
+          <option value="none">Results panel only — no file</option>
+          <option value="http" disabled>CSV over HTTP — not implemented</option>
+          <option value="postgres" disabled>PostgreSQL — not implemented</option>
+          <option value="sqlite" disabled>SQLite — not implemented</option>
+          <option value="neo4j" disabled>Neo4j — not implemented</option>
+        </select>
+      </div>
+      <div class="row">Relation
+        <select id="outRel"><option>analysing…</option></select>
+      </div>
+      <div class="row outCsv">File
+        <div class="picker"><span class="pick-path empty" id="outPath" tabindex="0"></span><button id="outBrowse"><svg class="ico" viewBox="0 0 16 16"><path d="M1.75 4.25a1.5 1.5 0 0 1 1.5-1.5h3l1.5 1.75h5a1.5 1.5 0 0 1 1.5 1.5v5.75a1.5 1.5 0 0 1-1.5 1.5h-9.5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>Browse…</button></div>
+      </div>
+      <div class="row outCsv">Delimiter
+        <select id="outDelim">
+          <option value=",">comma ,</option>
+          <option value=";">semicolon ;</option>
+          <option value="\t">tab</option>
+          <option value="|">pipe |</option>
+        </select>
+      </div>
+      <div class="row outCsv">Write a header row
+        <input type="checkbox" id="outHeader" checked>
+      </div>
+      <div class="row outCsv">Name the columns with @mapping
+        <input type="checkbox" id="outTyped" checked>
+      </div>
+      <div id="outCols"></div>
+      <pre class="gen" id="outCode"></pre>
+      <p class="hint" id="outHint"></p>
+      <div class="actions">
+        <button id="outCancel">Cancel</button>
+        <button class="primary" id="outInsert">Insert</button>
+      </div>
+    </div>
+
+    <div class="pop" id="help" hidden>
+      <section>
+        <h3>Keys</h3>
+        <dl>
+          <dt><kbd>&#8984;</kbd><kbd>&#9166;</kbd></dt><dd>run</dd>
+          <dt><kbd>&#8984;</kbd><kbd>&#8679;</kbd><kbd>K</kbd></dt><dd>check</dd>
+          <dt><kbd>&#8984;</kbd><kbd>&#8679;</kbd><kbd>E</kbd></dt><dd>explain</dd>
+          <dt><kbd>&#8984;</kbd><kbd>O</kbd></dt><dd>open</dd>
+          <dt><kbd>&#8984;</kbd><kbd>S</kbd></dt><dd>save</dd>
+          <dt><kbd>&#8984;</kbd><kbd>/</kbd></dt><dd>toggle <code>%</code> comment</dd>
+          <dt><kbd>&#8677;</kbd> / <kbd>&#8679;</kbd><kbd>&#8677;</kbd></dt><dd>indent / dedent</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Rules</h3>
+        <dl>
+          <dt>h(X) :- b(X).</dt><dd>a rule; <code>Y</code> only in the head is existential</dd>
+          <dt>p(1,"a").</dt><dd>a fact</dd>
+          <dt>X = Y :- body.</dt><dd>equality-generating dependency</dd>
+          <dt>#F :- body.</dt><dd>fail when the body matches</dd>
+          <dt>not p(X)</dt><dd>negation (must be stratified)</dd>
+          <dt>#f(X,Y)</dt><dd>Skolem function: a deterministic null</dd>
+          <dt>J = X + 1</dt><dd>assignment when <code>J</code> is not bound in the body</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Annotations</h3>
+        <dl>
+          <dt>@output("p").</dt><dd>emit this relation — <em>+&#8202;Output</em> writes this for you</dd>
+          <dt>@input("p").</dt><dd>read it from its binding</dd>
+          <dt>@bind("p","csv",d,f).</dt><dd>attach a CSV file — <em>+&#8202;Source</em> writes this for you</dd>
+          <dt>@mapping("p",0,c,t).</dt><dd>column name and type</dd>
+          <dt>@post("p","...").</dt><dd>orderby, min, max, argmin, argmax, limit, certain, unique</dd>
+          <dt>@library(a,l).</dt><dd>math, collections, regex, datatypes, nullManagement, hashCode, monotonic</dd>
+          <dt>@include("f.vada").</dt><dd>textual inclusion, resolved next to this file</dd>
+          <dt>${name}</dt><dd>parameter: a constant, or text inside a string, given at run time — <em>${&#8202;}</em> sets the values</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Aggregates</h3>
+        <dl>
+          <dt>msum mprod mcount munion</dt><dd>monotonic: safe inside recursion, one fact per activation</dd>
+          <dt>min max count sum prod avg</dt><dd>stratified: one fact per group</dd>
+        </dl>
+      </section>
+    </div>
+  </header>
+
+  <div class="editor">
+    <div class="gutter"><div class="gutter-inner" id="gutter"></div></div>
+    <div class="code">
+      <pre class="hl" id="hl" aria-hidden="true"></pre>
+      <textarea id="ed" wrap="off" spellcheck="false" autocomplete="off"
+                autocapitalize="off" autocorrect="off"
+                placeholder="% write a Vadalog program, then press Run"></textarea>
+    </div>
+  </div>
+
+  <div class="split" id="split"></div>
+
+  <div class="results">
+    <div class="tabs">
+      <button class="tab on" data-pane="out">Output</button>
+      <button class="tab" data-pane="diag">Diagnostics<span class="badge" id="dbadge" hidden>0</span></button>
+      <button class="tab" data-pane="stats">Stats</button>
+      <span class="meta" id="meta">ready</span>
+    </div>
+    <div class="pane" id="out"><div class="empty">Press Run.</div></div>
+    <div class="pane" id="diag" hidden><div class="empty">No diagnostics.</div></div>
+    <div class="pane" id="stats" hidden><div class="empty">No run yet.</div></div>
+  </div>
+</div>
+
+<div class="modal-back" id="fdBack" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="fdTitle">
+    <h3 id="fdTitle">Open</h3>
+    <div class="fd-nav">
+      <button class="icon" id="fdUp" title="Up one folder"><svg class="ico" viewBox="0 0 16 16"><path d="M8 13V3.5M3.75 7.5 8 3.25l4.25 4.25"/></svg></button>
+      <div class="crumbs" id="fdCrumbs"></div>
+    </div>
+    <div class="fd-list" id="fdList" tabindex="0" role="listbox"></div>
+    <div class="fd-name" id="fdNameRow">
+      <label for="fdName" id="fdNameLabel">Name</label>
+      <input type="text" id="fdName" spellcheck="false" autocomplete="off">
+    </div>
+    <p class="hint" id="fdHint"></p>
+    <div class="actions">
+      <button id="fdCancel">Cancel</button>
+      <button class="primary" id="fdOk">Open</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ *
+ * Syntax highlighting
+ * ------------------------------------------------------------------ */
+
+const AGGS = "msum|mprod|mcount|munion|mmin|mmax|min|max|count|sum|prod|avg|set|list|union";
+const FNS  = "substring|contains|starts_with|ends_with|concat|index_of|string_length";
+
+const TOKEN = new RegExp([
+  "(?<comment>%[^\\n]*)",
+  "(?<string>\"(?:[^\"\\\\\\n]|\\\\.|\"\")*\"?)",
+  "(?<param>\\$\\{[A-Za-z0-9_]+\\})",
+  "(?<ann>@[a-z][A-Za-z0-9_]*)",
+  "(?<date>\\d{4}-\\d{2}-\\d{2}(?: \\d{2}:\\d{2}:\\d{2})?)",
+  "(?<bool>#[TF](?![A-Za-z0-9_]))",
+  "(?<skolem>#[a-z][A-Za-z0-9_]*)",
+  "(?<number>\\d+\\.\\d+|\\d+)",
+  "(?<impl>:-)",
+  "(?<kw>(?<![A-Za-z0-9_])(?:not|in)(?![A-Za-z0-9_])|!in)",
+  "(?<agg>(?<![A-Za-z0-9_:])(?:" + AGGS + ")(?=\\s*\\())",
+  "(?<fn>(?<![A-Za-z0-9_:])(?:" + FNS + ")(?=\\s*\\()|[a-z][A-Za-z0-9_]*:[a-z][A-Za-z0-9_]*)",
+  "(?<vari>(?<![A-Za-z0-9_])[A-Z][A-Za-z0-9_]*)",
+  "(?<anon>(?<![A-Za-z0-9_])_(?![A-Za-z0-9_]))",
+  "(?<pred>(?<![A-Za-z0-9_:])[a-z][A-Za-z0-9_]*)",
+  "(?<op>[<>!=]=|<>|&&|\\|\\||[-+*/<>=!|&])"
+].join("|"), "gu");
+
+const CLASS = {comment:"c-comment", string:"c-string", param:"c-ann", ann:"c-ann", date:"c-number",
+  bool:"c-null", skolem:"c-null", number:"c-number", impl:"c-impl", kw:"c-kw",
+  agg:"c-agg", fn:"c-fn", vari:"c-var", anon:"c-anon", pred:"c-pred", op:"c-op"};
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function highlightLine(line) {
+  let out = "", last = 0, m;
+  TOKEN.lastIndex = 0;
+  while ((m = TOKEN.exec(line)) !== null) {
+    if (m.index > last) out += esc(line.slice(last, m.index));
+    const g = Object.keys(m.groups).find(k => m.groups[k] !== undefined);
+    out += '<span class="' + CLASS[g] + '">' + esc(m[0]) + "</span>";
+    last = m.index + m[0].length;
+    if (m[0].length === 0) TOKEN.lastIndex++;
+  }
+  return out + esc(line.slice(last));
+}
+
+/* ------------------------------------------------------------------ *
+ * Editor
+ * ------------------------------------------------------------------ */
+
+const ed = document.getElementById("ed");
+const hl = document.getElementById("hl");
+const gutter = document.getElementById("gutter");
+const meta = document.getElementById("meta");
+const dbadge = document.getElementById("dbadge");
+
+let errorLine = null, dirty = false, busy = false;
+let currentPath = null, readOnly = false;
+
+/* The textarea is never rewritten by the highlighter, so the caret and the
+   native undo stack are left alone; only the <pre> underneath is redrawn. */
+function render() {
+  const lines = ed.value.split("\n");
+  hl.innerHTML = lines.map((line, i) => {
+    const body = highlightLine(line);
+    return (i + 1 === errorLine)
+      ? '<span class="errline">' + (body || " ") + "</span>"
+      : body;
+  }).join("\n") + "\n";
+  gutter.innerHTML = lines.map((_, i) =>
+    '<div class="ln' + (i + 1 === errorLine ? " bad" : "") + '">' + (i + 1) + "</div>"
+  ).join("");
+  sync();
+  renderParams();
+}
+
+function sync() {
+  hl.scrollTop = ed.scrollTop;
+  hl.scrollLeft = ed.scrollLeft;
+  gutter.style.transform = "translateY(" + (-ed.scrollTop) + "px)";
+}
+
+ed.addEventListener("input", () => { markDirty(true); errorLine = null; render(); });
+ed.addEventListener("scroll", sync);
+
+/* Insert through execCommand where it exists so that ctrl/cmd-Z still undoes
+   what the editor typed; setRangeText is the fallback. */
+function insert(text) {
+  ed.focus();
+  if (!document.execCommand || !document.execCommand("insertText", false, text)) {
+    ed.setRangeText(text, ed.selectionStart, ed.selectionEnd, "end");
+  }
+  markDirty(true); errorLine = null; render();
+}
+
+function replaceRange(text, from, to, select) {
+  ed.focus();
+  ed.setSelectionRange(from, to);
+  if (!document.execCommand || !document.execCommand("insertText", false, text)) {
+    ed.setRangeText(text, from, to, "end");
+  }
+  if (select) ed.setSelectionRange(from, from + text.length);
+  markDirty(true); errorLine = null; render();
+}
+
+function lineBounds() {
+  const v = ed.value;
+  const from = v.lastIndexOf("\n", ed.selectionStart - 1) + 1;
+  let to = v.indexOf("\n", ed.selectionEnd);
+  if (to === -1) to = v.length;
+  return [from, to];
+}
+
+function indent(by) {
+  const [from, to] = lineBounds();
+  const block = ed.value.slice(from, to);
+  const next = block.split("\n").map(l =>
+    by > 0 ? "  " + l : l.replace(/^ {1,2}/, "")).join("\n");
+  if (next !== block) replaceRange(next, from, to, true);
+}
+
+function toggleComment() {
+  const [from, to] = lineBounds();
+  const block = ed.value.slice(from, to);
+  const commented = block.split("\n").every(l => /^\s*%/.test(l) || !l.trim());
+  const next = block.split("\n").map(l =>
+    commented ? l.replace(/^(\s*)% ?/, "$1")
+              : (l.trim() ? l.replace(/^(\s*)/, "$1% ") : l)).join("\n");
+  replaceRange(next, from, to, true);
+}
+
+ed.addEventListener("keydown", e => {
+  const mod = e.metaKey || e.ctrlKey;
+  if (mod && e.key === "Enter")  { e.preventDefault(); doRun(); return; }
+  if (mod && e.shiftKey && e.key.toLowerCase() === "k") { e.preventDefault(); doCheck(); return; }
+  if (mod && e.shiftKey && e.key.toLowerCase() === "e") { e.preventDefault(); doExplain(); return; }
+  if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); save(); return; }
+  if (mod && e.key.toLowerCase() === "o") { e.preventDefault(); openDialog("open"); return; }
+  if (mod && e.key === "/") { e.preventDefault(); toggleComment(); return; }
+  if (mod) return;
+
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const oneLine = !ed.value.slice(ed.selectionStart, ed.selectionEnd).includes("\n");
+    if (e.shiftKey) indent(-1);
+    else if (oneLine && ed.selectionStart === ed.selectionEnd) insert("  ");
+    else indent(1);
+  }
+});
+
+function focusLine(n) {
+  const lines = ed.value.split("\n");
+  let pos = 0;
+  for (let i = 0; i < n - 1 && i < lines.length; i++) pos += lines[i].length + 1;
+  ed.focus();
+  ed.setSelectionRange(pos, pos + (lines[n - 1] || "").length);
+}
+
+/* ------------------------------------------------------------------ *
+ * Results panel
+ * ------------------------------------------------------------------ */
+
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+  ["out", "diag", "stats"].forEach(p =>
+    document.getElementById(p).hidden = (p !== t.dataset.pane));
+}));
+const showTab = n => document.querySelector('.tab[data-pane="' + n + '"]').click();
+
+function setOut(html) { document.getElementById("out").innerHTML = html; }
+function setStats(stats, elapsed) {
+  const box = document.getElementById("stats");
+  if (!stats) { box.innerHTML = '<div class="empty">No run yet.</div>'; return; }
+  const rows = Object.entries(stats).concat(
+    elapsed === undefined ? [] : [["wall time", elapsed + " ms"]]);
+  box.innerHTML = "<table class=stats>" + rows.map(
+    ([k, v]) => "<tr><td>" + esc(k) + "</td><td>" + esc(String(v)) + "</td></tr>"
+  ).join("") + "</table>";
+}
+function setDiags(diags) {
+  const box = document.getElementById("diag");
+  dbadge.hidden = diags.length === 0;
+  dbadge.textContent = diags.length;
+  dbadge.className = "badge " + (diags.some(d => d.kind === "error") ? "err" : "warn");
+  if (!diags.length) { box.innerHTML = '<div class="empty">No diagnostics.</div>'; return; }
+  box.innerHTML = diags.map(d =>
+    '<div class="diag ' + (d.kind === "error" ? "error" : "warn") + '">' +
+      '<span class="kind">' + esc(d.label || d.kind) + "</span>" +
+      (d.line ? '<span class="where" data-line="' + d.line + '">line ' + d.line + "</span>" : "") +
+      '<span class="msg">' + esc(d.msg) + "</span></div>").join("");
+  box.querySelectorAll(".where").forEach(w => w.addEventListener("click", () => {
+    errorLine = +w.dataset.line; render(); focusLine(errorLine);
+  }));
+}
+
+function showError(err) {
+  if (err.kind === "parameters") {
+    noteParams({ok: false, error: err});
+    POPS.forEach(p => document.getElementById(p).hidden = p !== "params");
+    const first = document.querySelector("#paramRows input.missing");
+    if (first) first.focus();
+  }
+  errorLine = err.line || null;
+  render();
+  setDiags([{kind: "error", label: err.kind, line: err.line, msg: err.message}]);
+  setOut('<div class="empty">' + esc(err.kind) + " error — see Diagnostics.</div>");
+  setStats(null);
+  showTab("diag");
+  meta.textContent = err.kind + " error";
+}
+
+/* ------------------------------------------------------------------ *
+ * Talking to the server
+ * ------------------------------------------------------------------ */
+
+const limits = () => ({
+  timeout: +document.getElementById("optTimeout").value || 0,
+  maxFacts: +document.getElementById("optFacts").value || 0,
+  allowUnstratified: document.getElementById("optUnstrat").checked,
+});
+
+async function api(path, opts) {
+  const res = await fetch(path, Object.assign({
+    headers: {"Content-Type": "application/json", "X-Vadalog": "1"},
+  }, opts));
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch (_) { return {ok: false, error: {kind: "server", message: text || res.statusText}}; }
+}
+function post(path, body) {
+  return api(path, {method: "POST", body: JSON.stringify(
+    Object.assign({program: ed.value, path: currentPath, limits: limits(),
+                   paramLiterals: paramLiterals()}, body))});
+}
+
+/* ------------------------------------------------------------------ *
+ * Parameters
+ *
+ * Placeholders ${name} (SPECIFICATION.md sec. 11.8).  The list comes from a
+ * scan of the editor text, plus whatever the server reports — which covers
+ * placeholders in @include-d files.  Values are typed as Vadalog literals and
+ * sent with every request; the server parses them.
+ * ------------------------------------------------------------------ */
+
+const paramValues = {};          // name -> literal text, kept across files
+let paramServer = [];            // names the server reported for this program
+let paramRowsFor = null;         // the name list the rows were built for
+
+function scanParams(text) {
+  const names = [];
+  let inStr = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inStr) {
+      if (c === "\\") { i++; continue; }
+      if (c === '"') { if (text[i + 1] === '"') i++; else inStr = false; continue; }
+      if (text.startsWith("$${", i)) { i += 2; continue; }
+    } else if (c === "%") {
+      while (i < text.length && text[i] !== "\n") i++;
+      continue;
+    } else if (c === '"') {
+      inStr = true;
+      continue;
+    }
+    if (c === "$" && text[i + 1] === "{") {
+      const m = /^\$\{([A-Za-z0-9_]+)\}/.exec(text.slice(i, i + 200));
+      if (m) {
+        if (!names.includes(m[1])) names.push(m[1]);
+        i += m[0].length - 1;
+      }
+    }
+  }
+  return names;
+}
+
+function paramNames() {
+  const names = scanParams(ed.value);
+  paramServer.forEach(n => { if (!names.includes(n)) names.push(n); });
+  return names;
+}
+
+function paramLiterals() {
+  const out = {};
+  paramNames().forEach(n => {
+    const v = (paramValues[n] || "").trim();
+    if (v) out[n] = v;
+  });
+  return out;
+}
+
+function renderParams() {
+  const names = paramNames();
+  const btn = document.getElementById("paramsBtn");
+  btn.hidden = !names.length;
+  if (!names.length) document.getElementById("params").hidden = true;
+  const rows = document.getElementById("paramRows");
+  const key = names.join(",");
+  if (key !== paramRowsFor) {
+    paramRowsFor = key;
+    rows.innerHTML = names.map(n =>
+      '<label><span><code>${' + esc(n) + '}</code></span>' +
+      '<input type="text" spellcheck="false" data-param="' + esc(n) + '"></label>').join("");
+    rows.querySelectorAll("input").forEach(inp => {
+      inp.value = paramValues[inp.dataset.param] || "";
+      inp.addEventListener("input", () => {
+        paramValues[inp.dataset.param] = inp.value;
+        renderParams();
+      });
+    });
+  }
+  let empty = 0;
+  rows.querySelectorAll("input").forEach(inp => {
+    const blank = !(paramValues[inp.dataset.param] || "").trim();
+    inp.classList.toggle("missing", blank);
+    if (blank) empty++;
+  });
+  const badge = document.getElementById("paramsBadge");
+  badge.hidden = !empty;
+  badge.textContent = empty;
+}
+
+function noteParams(r) {
+  const list = r && (r.parameters || (r.error && r.error.parameters));
+  if (!list) return;
+  const names = list.map(p => typeof p === "string" ? p : p.name);
+  paramServer = r.ok ? names : paramServer.concat(names.filter(n => !paramServer.includes(n)));
+  renderParams();
+}
+
+function setBusy(on, label) {
+  busy = on;
+  ["run", "check", "explain"].forEach(id => document.getElementById(id).disabled = on);
+  if (on) meta.textContent = label + "…";
+}
+
+async function guarded(label, fn) {
+  if (busy) return;
+  setBusy(true, label);
+  const t0 = performance.now();
+  try {
+    return await fn();
+  } catch (e) {
+    showError({kind: "server", message:
+      "cannot reach the vadalog server — is it still running? (" + e.message + ")"});
+  } finally {
+    setBusy(false);
+    if (meta.textContent.endsWith("…")) meta.textContent = Math.round(performance.now() - t0) + " ms";
+  }
+}
+
+function warnDiags(warnings) {
+  return (warnings || []).map(w => ({kind: "warn", label: "warning", msg: w}));
+}
+
+const doRun = () => guarded("running", async () => {
+  const r = await post("/api/run");
+  if (!r.ok) return showError(r.error);
+  noteParams(r);
+  errorLine = null; render();
+  const total = r.relations.reduce((n, rel) => n + rel.count, 0);
+  const body = r.relations.map(rel =>
+    '<div class="rel"><h4>' + esc(rel.name) + " <em>" + rel.count + "</em></h4>" +
+    (rel.facts.length ? rel.facts.map(f =>
+        '<div class="fact">' + esc(f).replace(/\bz\d+\b/g, m => '<span class="n">' + m + "</span>") + "</div>"
+      ).join("") : '<div class="note">(empty)</div>') +
+    (rel.truncated ? '<div class="note">showing ' + rel.shown + " of " + rel.count +
+       " — bind this relation to a CSV file to get all of it</div>" : "") +
+    "</div>").join("");
+  const written = (r.written || []).map(p =>
+    '<div class="note written">wrote ' + esc(p) + "</div>").join("");
+  setOut((body || '<div class="empty">No @output relation produced anything.</div>') + written);
+  setDiags(warnDiags(r.warnings));
+  setStats(r.stats, r.elapsedMs);
+  showTab("out");
+  meta.textContent = total + " fact" + (total === 1 ? "" : "s") + " · " + r.elapsedMs + " ms";
+});
+
+const doCheck = () => guarded("checking", async () => {
+  const r = await post("/api/check");
+  if (!r.ok) return showError(r.error);
+  noteParams(r);
+  errorLine = null; render();
+  setOut('<pre class="text">' + esc(r.text) + "</pre>");
+  setDiags(warnDiags(r.warnings));
+  setStats(null);
+  showTab("out");
+  meta.textContent = "checked";
+});
+
+const doExplain = () => guarded("explaining", async () => {
+  const r = await post("/api/explain");
+  if (!r.ok) return showError(r.error);
+  noteParams(r);
+  errorLine = null; render();
+  setOut('<pre class="text">' + esc(r.text) + "</pre>");
+  setDiags(warnDiags(r.warnings));
+  setStats(null);
+  showTab("out");
+  meta.textContent = "normalised program";
+});
+
+document.getElementById("run").onclick = doRun;
+document.getElementById("check").onclick = doCheck;
+document.getElementById("explain").onclick = doExplain;
+
+/* ------------------------------------------------------------------ *
+ * Files
+ *
+ * The classic trio.  New and Open go through one dialog that walks the
+ * served directory a folder at a time: Open lists folders and .vada files;
+ * New lists the same, with the files greyed for orientation, and asks for a
+ * name.  Save is enabled only when there is something to save, and on a
+ * buffer that was never saved it becomes Save as.
+ * ------------------------------------------------------------------ */
+
+const MOD = /Mac/.test(navigator.platform || "") ? "⌘" : "Ctrl+";
+const saveBtn = document.getElementById("saveBtn");
+const fname   = document.getElementById("fname");
+const attr = s => esc(s).replace(/"/g, "&quot;");
+
+function showName() {
+  fname.classList.toggle("untitled", !currentPath);
+  fname.classList.toggle("dirty", dirty);
+  if (!currentPath) {
+    fname.textContent = "untitled";
+    fname.title = dirty ? "not saved yet" : "Open a file";
+    return;
+  }
+  const cut = currentPath.lastIndexOf("/");
+  fname.innerHTML = (cut < 0 ? "" :
+    '<span class="dir">' + esc(currentPath.slice(0, cut + 1)) + "</span>") +
+    esc(currentPath.slice(cut + 1));
+  fname.title = currentPath + (dirty ? " — unsaved changes" : "");
+}
+
+function markDirty(v) {
+  dirty = v && !readOnly;
+  saveBtn.disabled = !dirty;
+  saveBtn.title = dirty ? "Save (" + MOD + "S)" : "Nothing to save";
+  showName();
+}
+
+const discardOk = () => !dirty ||
+  confirm("Discard unsaved changes to " + (currentPath || "this program") + "?");
+
+async function refreshFiles() {
+  const r = await api("/api/files");
+  if (!r.ok) return;
+  readOnly = !!r.readOnly;
+  document.getElementById("ro").hidden = !readOnly;
+  document.getElementById("newBtn").hidden = readOnly;
+  saveBtn.hidden = readOnly;
+  return r.files;
+}
+
+async function openFile(rel) {
+  const r = await api("/api/file?path=" + encodeURIComponent(rel));
+  if (!r.ok) { showError(r.error); return; }
+  currentPath = rel;
+  ed.value = r.text;
+  paramServer = [];
+  errorLine = null; markDirty(false); render();
+  setOut('<div class="empty">Press Run.</div>'); setDiags([]); setStats(null);
+  meta.textContent = "ready";
+}
+
+async function save() {
+  if (readOnly) { meta.textContent = "read-only"; return; }
+  if (!currentPath) return openDialog("saveas");
+  const r = await api("/api/file?path=" + encodeURIComponent(currentPath),
+                      {method: "PUT", body: ed.value});
+  if (!r.ok) return showError(r.error);
+  markDirty(false);
+  meta.textContent = "saved " + currentPath;
+}
+
+document.getElementById("newBtn").onclick = () => openDialog("new");
+document.getElementById("openBtn").onclick = () => openDialog("open");
+saveBtn.onclick = save;
+fname.onclick = () => openDialog("open");
+window.addEventListener("beforeunload", e => { if (dirty) e.preventDefault(); });
+
+/* -- the dialog ------------------------------------------------------ *
+ * One dialog for every file choice.  It walks the served directory a folder
+ * at a time and lists either .vada programs or .csv / .tsv data files.
+ * Modes without a name field pick an existing file (Open, the data file of
+ * + Source); modes with one choose a folder and take a name (New, Save as,
+ * the file an + Output writes), and show the files already there greyed.
+ * ------------------------------------------------------------------ */
+
+const fdBack      = document.getElementById("fdBack");
+const fdTitle     = document.getElementById("fdTitle");
+const fdCrumbs    = document.getElementById("fdCrumbs");
+const fdList      = document.getElementById("fdList");
+const fdNameRow   = document.getElementById("fdNameRow");
+const fdNameLabel = document.getElementById("fdNameLabel");
+const fdName      = document.getElementById("fdName");
+const fdHint      = document.getElementById("fdHint");
+const fdOk        = document.getElementById("fdOk");
+const fdUp        = document.getElementById("fdUp");
+
+const FD_MODES = {
+  open:   {title: "Open",                ok: "Open",   kind: "vada"},
+  new:    {title: "New file",            ok: "Create", kind: "vada", name: "Name", ext: ".vada"},
+  saveas: {title: "Save as",             ok: "Save",   kind: "vada", name: "Name", ext: ".vada"},
+  csvin:  {title: "Read a data file",    ok: "Choose", kind: "data", pick: true},
+  csvout: {title: "Write the output to", ok: "Choose", kind: "data", pick: true,
+           name: "File", ext: ".csv", flat: true},
+};
+const FD_KINDS = {
+  vada: {exts: /\.vada$/i,       empty: "no folders and no .vada files here"},
+  data: {exts: /\.(csv|tsv)$/i,  empty: "no folders and no .csv or .tsv files here"},
+};
+const ICON_DIR  = '<svg class="ico" viewBox="0 0 16 16"><path d="M1.75 4.25a1.5 1.5 0 0 1 1.5-1.5h3l1.5 1.75h5a1.5 1.5 0 0 1 1.5 1.5v5.75a1.5 1.5 0 0 1-1.5 1.5h-9.5a1.5 1.5 0 0 1-1.5-1.5z"/></svg>';
+const ICON_FILE = '<svg class="ico" viewBox="0 0 16 16"><path d="M9 1.75H4.5A1.5 1.5 0 0 0 3 3.25v9.5a1.5 1.5 0 0 0 1.5 1.5h7a1.5 1.5 0 0 0 1.5-1.5V5.75z"/><path d="M9 1.75v4h4"/></svg>';
+
+let fdMode = "open";
+let fdDir = "";             // the folder shown, relative to the served root
+let fdRoot = "";            // the root's own name, for the first crumb
+let fdEntries = [];         // [{kind: "dir" | "file", name, size}]
+let fdSel = -1;
+let fdSeq = 0;              // drops listings that arrive out of order
+let fdNameTouched = false;
+let fdPreselect = null;     // the file to highlight when its folder is listed
+let fdOnPick = null;        // pick modes hand the chosen path to this
+let fdReturn = null;        // what gets the focus back when the dialog closes
+const fdLast = {vada: "", data: ""};   // where each kind was last left
+
+const joinPath = (dir, name) => dir ? dir + "/" + name : name;
+const dirOf = p => (p && p.includes("/")) ? p.slice(0, p.lastIndexOf("/")) : "";
+const fdM = () => FD_MODES[fdMode];
+
+function fmtSize(n) {
+  if (n === null || n === undefined) return "";
+  if (n < 1024) return n + " B";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(n < 10240 ? 1 : 0) + " KB";
+  return (n / 1048576).toFixed(1) + " MB";
+}
+
+/* Show a root-relative path in a picker field, folder part faint. */
+function showPickPath(el, path, empty) {
+  el.classList.toggle("empty", !path);
+  el.title = path || "";
+  if (!path) { el.textContent = empty; return; }
+  const cut = path.lastIndexOf("/");
+  el.innerHTML = (cut < 0 ? "" : '<span class="dir">' + esc(path.slice(0, cut + 1)) + "</span>") +
+                 esc(path.slice(cut + 1));
+}
+
+/* opts: start (folder), select (file to highlight), name (initial name),
+   onPick (pick modes), returnFocus. */
+function openDialog(mode, opts) {
+  opts = opts || {};
+  const m = FD_MODES[mode];
+  if (readOnly && (mode === "new" || mode === "saveas")) return;
+  if (!m.pick) closePops();
+  fdMode = mode;
+  fdOnPick = opts.onPick || null;
+  fdReturn = opts.returnFocus || null;
+  fdPreselect = "select" in opts ? opts.select : currentPath;
+  fdTitle.textContent = m.title;
+  fdOk.textContent = m.ok;
+  fdNameRow.hidden = !m.name;
+  fdNameLabel.textContent = m.name || "";
+  fdName.value = opts.name || "";
+  fdNameTouched = !!opts.name;
+  fdHint.textContent = ""; fdHint.className = "hint";
+  fdEntries = []; fdSel = -1;
+  fdList.innerHTML = '<div class="fd-empty">loading…</div>';
+  fdBack.hidden = false;
+  if (m.name) { fdName.focus(); fdSelectBase(); } else fdList.focus();
+  fdLoad("start" in opts ? opts.start
+         : (currentPath ? dirOf(currentPath) : fdLast[m.kind]));
+}
+
+function fdSelectBase() {
+  const dot = fdName.value.lastIndexOf(".");
+  fdName.setSelectionRange(0, dot > 0 ? dot : fdName.value.length);
+}
+
+function fdClose() {
+  fdSeq++;
+  fdBack.hidden = true;
+  (fdReturn || ed).focus();
+}
+
+async function fdLoad(dir) {
+  const seq = ++fdSeq;
+  const m = fdM();
+  let r;
+  try { r = await api("/api/dir?kind=" + m.kind + "&path=" + encodeURIComponent(dir || "")); }
+  catch (e) { r = {ok: false, error: {message: "cannot reach the vadalog server"}}; }
+  if (seq !== fdSeq) return;
+  if (!r.ok && dir) return fdLoad("");         // the folder has gone: back to the root
+  if (!r.ok) {
+    fdEntries = []; fdSel = -1;
+    fdList.innerHTML = '<div class="fd-empty">' + esc(r.error.message) + "</div>";
+    return fdUpdate();
+  }
+  fdDir = fdLast[m.kind] = r.path;
+  fdRoot = r.root;
+  const sizes = r.sizes || [];
+  fdEntries = r.dirs.map(name => ({kind: "dir", name}))
+    .concat(r.files.map((name, i) => ({kind: "file", name, size: sizes[i]})));
+  fdSel = m.name ? -1 : fdEntries.findIndex(e =>
+    e.kind === "file" && joinPath(fdDir, e.name) === fdPreselect);
+  if (m.name && !fdNameTouched) { fdName.value = fdUntitled(); fdSelectBase(); }
+  fdRenderCrumbs(); fdRenderList(); fdUpdate();
+  if (fdSel >= 0) fdSelect(fdSel);
+}
+
+function fdUntitled() {
+  const ext = fdM().ext;
+  const taken = new Set(fdEntries.map(e => e.name.toLowerCase()));
+  let name = "untitled" + ext, n = 1;
+  while (taken.has(name)) name = "untitled-" + (++n) + ext;
+  return name;
+}
+
+function fdRenderCrumbs() {
+  const parts = fdDir ? fdDir.split("/") : [];
+  const crumbs = [{label: fdRoot || "root", path: ""}].concat(
+    parts.map((p, i) => ({label: p, path: parts.slice(0, i + 1).join("/")})));
+  fdCrumbs.innerHTML = crumbs.map((c, i) =>
+    (i ? '<span class="sep">›</span>' : "") +
+    '<button type="button" data-path="' + attr(c.path) + '">' + esc(c.label) + "</button>"
+  ).join("");
+  fdCrumbs.querySelectorAll("button").forEach(b => b.onclick = () => fdLoad(b.dataset.path));
+  fdUp.disabled = !fdDir;
+}
+
+function fdRenderList() {
+  const m = fdM();
+  if (!fdEntries.length) {
+    fdList.innerHTML = '<div class="fd-empty">' + FD_KINDS[m.kind].empty + "</div>";
+    return;
+  }
+  fdList.innerHTML = fdEntries.map((e, i) =>
+    '<div class="fd-item ' + e.kind + (e.kind === "file" && m.name ? " muted" : "") +
+      '" role="option" data-i="' + i + '">' +
+      (e.kind === "dir" ? ICON_DIR : ICON_FILE) +
+      '<span class="nm">' + esc(e.name) + "</span>" +
+      (e.kind === "file" ? '<span class="sz">' + fmtSize(e.size) + "</span>" : "") +
+    "</div>").join("");
+}
+
+function fdSelect(i) {
+  fdSel = i;
+  fdList.querySelectorAll(".fd-item").forEach(el =>
+    el.classList.toggle("sel", +el.dataset.i === i));
+  const el = fdList.querySelector('.fd-item[data-i="' + i + '"]');
+  if (el) el.scrollIntoView({block: "nearest"});
+  const e = fdEntries[i];
+  if (e && e.kind === "file" && fdM().name) {
+    fdName.value = e.name; fdNameTouched = true;
+  }
+  fdUpdate();
+}
+
+/* The path a named mode would produce, or why there is none. */
+function fdTarget() {
+  const m = fdM();
+  const raw = fdName.value.trim().replace(/\\/g, "/");
+  if (!raw) return {};
+  if (m.flat && raw.includes("/")) return {error: "just the file name — choose the folder above"};
+  if (raw.startsWith("/")) return {error: "the name is relative to the folder shown"};
+  if (raw.split("/").some(seg => !seg || seg === "." || seg === ".."))
+    return {error: "empty, . and .. are not allowed in a name"};
+  return {path: joinPath(fdDir, FD_KINDS[m.kind].exts.test(raw) ? raw : raw + m.ext)};
+}
+
+function fdUpdate() {
+  const m = fdM();
+  if (!m.name) {
+    const e = fdEntries[fdSel];
+    fdOk.disabled = !e;
+    fdHint.className = "hint";
+    fdHint.textContent = e && e.kind === "file" ? joinPath(fdDir, e.name) : "";
+    return;
+  }
+  const t = fdTarget();
+  const exists = !!t.path && fdEntries.some(e =>
+    e.kind === "file" && joinPath(fdDir, e.name) === t.path);
+  fdOk.disabled = !t.path;
+  fdHint.className = "hint" + (t.error || exists ? " warn" : "");
+  const verb = {new: "creates ", saveas: "saves as ", csvout: "a run writes "}[fdMode];
+  fdHint.textContent = t.error || (!t.path ? "" : !exists ? verb + t.path
+    : fdMode === "csvout" ? t.path + " exists — a run will overwrite it"
+                          : t.path + " already exists and will be replaced");
+}
+
+function fdPick(path) {
+  const cb = fdOnPick;
+  fdClose();
+  if (cb) cb(path);
+}
+
+async function fdActivate(i) {
+  const m = fdM(), e = fdEntries[i];
+  if (!e) return;
+  if (e.kind === "dir") return fdLoad(joinPath(fdDir, e.name));
+  const path = joinPath(fdDir, e.name);
+  if (m.name) { fdName.value = e.name; fdNameTouched = true; return fdConfirm(); }
+  if (m.pick) return fdPick(path);
+  if (!discardOk()) return;
+  fdClose();
+  await openFile(path);
+}
+
+async function fdConfirm() {
+  const m = fdM();
+  if (!m.name) return fdActivate(fdSel);
+  const t = fdTarget();
+  if (!t.path) return;
+  if (m.pick) return fdPick(t.path);
+  try {
+    const probe = await api("/api/file?path=" + encodeURIComponent(t.path));
+    if (probe.ok && !confirm(t.path + " already exists. Replace it?")) return;
+    if (fdMode === "new" && !discardOk()) return;
+    const body = fdMode === "saveas" ? ed.value : "% " + t.path + "\n\n";
+    const r = await api("/api/file?path=" + encodeURIComponent(t.path), {method: "PUT", body});
+    if (!r.ok) { fdHint.className = "hint warn"; fdHint.textContent = r.error.message; return; }
+  } catch (e) {
+    fdHint.className = "hint warn";
+    fdHint.textContent = "cannot reach the vadalog server";
+    return;
+  }
+  const mode = fdMode;
+  fdClose();
+  if (mode === "saveas") {
+    currentPath = t.path; markDirty(false);
+    meta.textContent = "saved " + t.path;
+  } else {
+    await openFile(t.path);
+  }
+}
+
+fdList.addEventListener("click", e => {
+  const it = e.target.closest(".fd-item");
+  if (it) fdSelect(+it.dataset.i);
+});
+fdList.addEventListener("dblclick", e => {
+  const it = e.target.closest(".fd-item");
+  if (it) fdActivate(+it.dataset.i);
+});
+fdName.addEventListener("input", () => { fdNameTouched = true; fdUpdate(); });
+fdUp.onclick = () => { if (fdDir) fdLoad(dirOf(fdDir)); };
+fdOk.onclick = fdConfirm;
+document.getElementById("fdCancel").onclick = fdClose;
+fdBack.addEventListener("mousedown", e => { if (e.target === fdBack) fdClose(); });
+fdBack.addEventListener("click", e => e.stopPropagation());
+
+fdBack.addEventListener("keydown", e => {
+  if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); return fdClose(); }
+  if (e.target.tagName === "BUTTON") return;
+  const inName = e.target === fdName;
+  if (e.key === "Enter") {
+    e.preventDefault(); e.stopPropagation();
+    return inName ? fdConfirm() : fdActivate(fdSel);
+  }
+  if (inName) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    if (!fdEntries.length) return;
+    const step = e.key === "ArrowDown" ? 1 : -1;
+    const next = fdSel < 0 ? (step > 0 ? 0 : fdEntries.length - 1)
+                           : Math.min(Math.max(fdSel + step, 0), fdEntries.length - 1);
+    fdSelect(next);
+  } else if (e.key === "Backspace") {
+    e.preventDefault();
+    if (fdDir) fdLoad(dirOf(fdDir));
+  }
+});
+
+/* A picker field opens the dialog on click, Enter or Space. */
+function pickerField(el, open) {
+  el.addEventListener("click", open);
+  el.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+  });
+}
+
+
+/* ------------------------------------------------------------------ *
+ * Data sources
+ *
+ * The engine reads a relation from a file through three annotations that
+ * have to agree with each other and with the file on disk: @input names the
+ * relation, @bind says where the file is and how to read it, @mapping types
+ * every column.  Writing them by hand means counting columns.  This dialog
+ * lets you browse the served directory for a data file, guesses delimiter,
+ * header and column types from its first rows, shows the guess for
+ * correction, and inserts the three annotations at the caret.
+ *
+ * Only local CSV is implemented; the other kinds in the Kind menu are listed
+ * disabled so that the shape of the dialog is the same when they arrive.
+ * ------------------------------------------------------------------ */
+
+const CSV_TYPES = ["string", "int", "double", "boolean", "date"];
+
+const srcPop    = document.getElementById("source");
+const srcPathEl = document.getElementById("srcPath");
+const srcBrowse = document.getElementById("srcBrowse");
+const srcDelim  = document.getElementById("srcDelim");
+const srcPred   = document.getElementById("srcPred");
+const srcHeader = document.getElementById("srcHeader");
+const srcTyped  = document.getElementById("srcTyped");
+const srcCols   = document.getElementById("srcCols");
+const srcCode   = document.getElementById("srcCode");
+const srcHint   = document.getElementById("srcHint");
+const srcInsert = document.getElementById("srcInsert");
+
+let srcInfo = null;             // the last /api/sniff answer
+let srcPath = "";               // the data file picked, relative to the root
+
+/* A predicate name has to be an identifier, so the file name becomes one. */
+function predicateName(rel) {
+  const base = rel.split(/[\\/]/).pop().replace(/\.[^.]*$/, "");
+  let name = base.toLowerCase().replace(/[^a-z0-9_]+/g, "_").replace(/^_+|_+$/g, "");
+  if (!/^[a-z]/.test(name)) name = "d_" + name;
+  name = name || "source";
+  let out = name, n = 2;
+  while (new RegExp('@input\\(\\s*"' + out + '"').test(ed.value)) out = name + "_" + n++;
+  return out;
+}
+
+/* @bind resolves its directory against the directory of the program being
+   run, which is the open file, or the served root while nothing is open. */
+function bindPath(rel) {
+  const from = currentPath ? currentPath.split(/[\\/]/).slice(0, -1) : [];
+  const to = rel.split(/[\\/]/);
+  const file = to.pop();
+  let i = 0;
+  while (i < from.length && i < to.length && from[i] === to[i]) i++;
+  const dir = from.slice(i).map(() => "..").concat(to.slice(i)).join("/");
+  return [dir || ".", file];
+}
+
+function columnsOf(box) {
+  return Array.from(box.querySelectorAll("tr[data-pos]")).map(tr => ({
+    name: tr.querySelector(".cname").value.trim() || ("col" + tr.dataset.pos),
+    type: tr.querySelector(".ctype").value,
+  }));
+}
+
+function renderColumns(box, columns, onInput) {
+  box.innerHTML =
+    "<table class=cols><tr><th></th><th>column</th><th>type</th><th>first value</th></tr>" +
+    columns.map((c, i) =>
+      '<tr data-pos="' + i + '"><td class="pos">' + i + "</td>" +
+      '<td><input class="cname" spellcheck="false" autocomplete="off" value="' +
+        esc(c.name).replace(/"/g, "&quot;") + '"></td>' +
+      "<td><select class=ctype>" + CSV_TYPES.map(ty =>
+        '<option value="' + ty + '"' + (ty === c.type ? " selected" : "") + ">" + ty + "</option>"
+      ).join("") + "</select></td>" +
+      '<td class="sample">' + esc(c.sample || "") + (c.nulls ? " ·&#8202;null" : "") +
+      "</td></tr>").join("") +
+    "</table>";
+  box.querySelectorAll("input, select").forEach(el =>
+    el.addEventListener("input", onInput));
+}
+
+function srcGenerated() {
+  if (!srcInfo) return "";
+  const pred = (srcPred.value.trim() || "source").replace(/"/g, "");
+  const [dir, file] = bindPath(srcInfo.path);
+  const opts = [];
+  if (srcHeader.checked) opts.push("useHeaders='true'");
+  if (srcDelim.value !== ",") opts.push("delimiter='" +
+      (srcDelim.value === "\t" ? "\\t" : srcDelim.value) + "'");
+  const spec = "csv" + (opts.length ? " " + opts.join(" ") : "");
+  let out = '@input("' + pred + '").\n' +
+            '@bind("' + pred + '", "' + spec + '", "' + dir + '", "' + file + '").\n';
+  if (srcTyped.checked) {
+    out += columnsOf(srcCols).map((c, i) =>
+      '@mapping("' + pred + '", ' + i + ', "' + c.name + '", "' + c.type + '").\n').join("");
+  }
+  return out;
+}
+
+function srcRender() {
+  const code = srcGenerated();
+  srcCode.textContent = code || "pick a file";
+  srcInsert.disabled = !code;
+  if (!srcInfo) return;
+  const notes = [];
+  if (srcInfo.header && !srcHeader.checked)
+    notes.push("the first row looks like a header — unchecked, it is read as data");
+  if (!srcInfo.header && srcHeader.checked)
+    notes.push("no header was detected in this file");
+  if (!srcTyped.checked) notes.push("without @mapping every column is read as a string");
+  notes.push(srcInfo.sampled + " row" + (srcInfo.sampled === 1 ? "" : "s") +
+             " sampled" + (srcInfo.partial ? " (of a larger file)" : ""));
+  srcHint.textContent = notes.join(" · ");
+  srcHint.className = "hint" + (notes.length > 1 ? " warn" : "");
+}
+
+async function srcSniff() {
+  const rel = srcPath;
+  if (!rel) { srcInfo = null; srcCols.innerHTML = ""; return srcRender(); }
+  const r = await api("/api/sniff?path=" + encodeURIComponent(rel) +
+                      "&delimiter=" + encodeURIComponent(srcDelim.value));
+  if (!r.ok) {
+    srcInfo = null; srcCols.innerHTML = "";
+    srcCode.textContent = ""; srcInsert.disabled = true;
+    srcHint.textContent = r.error.message; srcHint.className = "hint warn";
+    return;
+  }
+  srcInfo = r;
+  srcDelim.value = r.delimiter;
+  srcHeader.checked = r.header;
+  renderColumns(srcCols, r.columns, srcRender);
+  srcRender();
+}
+
+function srcBrowseOpen() {
+  openDialog("csvin", {
+    start: srcPath ? dirOf(srcPath) : (fdLast.data || dirOf(currentPath || "")),
+    select: srcPath, returnFocus: srcBrowse, onPick: srcChoose});
+}
+
+async function srcChoose(rel) {
+  srcPath = rel;
+  showPickPath(srcPathEl, srcPath, "no file chosen");
+  srcPred.value = predicateName(rel);
+  await srcSniff();
+}
+
+showPickPath(srcPathEl, "", "no file chosen");
+pickerField(srcPathEl, srcBrowseOpen);
+srcBrowse.onclick = srcBrowseOpen;
+srcDelim.addEventListener("change", srcSniff);
+srcHeader.addEventListener("change", () => {
+  if (!srcInfo) return;
+  renderColumns(srcCols, srcInfo.columns.map((c, i) => Object.assign({}, c, {
+    name: srcHeader.checked && srcInfo.header ? c.name : "col" + i})), srcRender);
+  srcRender();
+});
+srcTyped.addEventListener("change", srcRender);
+srcPred.addEventListener("input", srcRender);
+document.getElementById("srcCancel").onclick = () => { srcPop.hidden = true; };
+
+srcInsert.onclick = () => {
+  const code = srcGenerated();
+  if (!code) return;
+  srcPop.hidden = true;
+  const at = ed.selectionStart;
+  const lead = (at === 0 || ed.value[at - 1] === "\n") ? "" : "\n";
+  insert(lead + code + "\n");
+  meta.textContent = "added " + srcInfo.path;
+};
+
+/* ------------------------------------------------------------------ *
+ * Outputs
+ *
+ * The mirror image of the dialog above, and the harder half: the file does
+ * not exist yet, so nothing can be read off disk.  Width and column names
+ * come from the rule heads — the names the author already chose for those
+ * variables — and the types come from the values the program actually
+ * derives, which means the server runs it, with the output list emptied so
+ * that nothing bound to a file is written on the way.
+ * ------------------------------------------------------------------ */
+
+const sinkPop   = document.getElementById("sink");
+const outKind   = document.getElementById("outKind");
+const outRel    = document.getElementById("outRel");
+const outPathEl = document.getElementById("outPath");
+const outBrowse = document.getElementById("outBrowse");
+const outDelim  = document.getElementById("outDelim");
+const outHeader = document.getElementById("outHeader");
+const outTyped  = document.getElementById("outTyped");
+const outCols   = document.getElementById("outCols");
+const outCode   = document.getElementById("outCode");
+const outHint   = document.getElementById("outHint");
+const outInsert = document.getElementById("outInsert");
+
+let outData = null;      // the last /api/relations answer
+let outFor  = null;      // the program text it was computed from
+let outTarget = "";      // the CSV file the output writes, relative to the root
+let outFolder = null;    // the folder last chosen for it, if any
+
+const outCurrent = () =>
+  outData && outData.relations.find(r => r.name === outRel.value);
+
+/* By default an output is named after its relation and sits next to the
+   program, or in the folder last chosen for an output. */
+const outDefault = rel => joinPath(
+  outFolder !== null ? outFolder : dirOf(currentPath || ""), rel.name + ".csv");
+
+function outBrowseOpen() {
+  const rel = outCurrent();
+  const target = outTarget || (rel ? outDefault(rel) : "");
+  openDialog("csvout", {
+    start: dirOf(target), select: null, name: target.split("/").pop(),
+    returnFocus: outBrowse,
+    onPick: path => {
+      outTarget = path; outFolder = dirOf(path);
+      showPickPath(outPathEl, outTarget, "choose a file");
+      outRender();
+    }});
+}
+
+function outGenerated() {
+  const rel = outCurrent();
+  if (!rel) return "";
+  let out = '@output("' + rel.name + '").\n';
+  if (outKind.value !== "csv") return out;
+  const opts = [];
+  if (outHeader.checked) opts.push("useHeaders='true'");
+  if (outDelim.value !== ",") opts.push("delimiter='" +
+      (outDelim.value === "\t" ? "\\t" : outDelim.value) + "'");
+  const spec = "csv" + (opts.length ? " " + opts.join(" ") : "");
+  const [dir, file] = bindPath(outTarget || outDefault(rel)).map(x => x.replace(/"/g, ""));
+  out += '@bind("' + rel.name + '", "' + spec + '", "' + dir + '", "' + file + '").\n';
+  if (outTyped.checked) {
+    out += columnsOf(outCols).map((c, i) =>
+      '@mapping("' + rel.name + '", ' + i + ', "' + c.name + '", "' + c.type + '").\n').join("");
+  }
+  return out;
+}
+
+function outRender() {
+  const csv = outKind.value === "csv";
+  document.querySelectorAll("#sink .outCsv").forEach(r => r.hidden = !csv);
+  const code = outGenerated();
+  outCode.textContent = code || "no relation to write";
+  outInsert.disabled = !code;
+  const rel = outCurrent();
+  if (!rel) return;
+  const notes = [];
+  if (rel.output) notes.push("this relation is already an @output");
+  if (outData && !outData.ran) notes.push(outData.note);
+  else if (rel.count === 0) notes.push("the program derives nothing for it at the moment");
+  if (csv && outHeader.checked && !outTyped.checked)
+    notes.push("without @mapping the header row reads col0, col1, …");
+  if (csv && rel.columns.some(c => c.nulls))
+    notes.push("marked nulls are written as \\N");
+  if (!notes.length && outData && outData.ran)
+    notes.push(rel.count + " fact" + (rel.count === 1 ? "" : "s") +
+               " before @post directives are applied");
+  outHint.textContent = notes.join(" · ");
+  outHint.className = "hint" + (rel.output || (outData && !outData.ran) ? " warn" : "");
+}
+
+function outPick() {
+  const rel = outCurrent();
+  if (!rel) { outCols.innerHTML = ""; return outRender(); }
+  outTarget = outDefault(rel);
+  showPickPath(outPathEl, outTarget, "choose a file");
+  renderColumns(outCols, rel.columns, outRender);
+  outRender();
+}
+
+async function outAnalyse() {
+  if (outData && outFor === ed.value) return outRender();
+  outRel.innerHTML = "<option>analysing…</option>";
+  outCols.innerHTML = ""; outCode.textContent = ""; outInsert.disabled = true;
+  outHint.className = "hint";
+  outHint.textContent = "running the program to read the column types…";
+  const r = await post("/api/relations", {run: true});
+  if (!r.ok) {
+    outData = null; outFor = null;
+    outRel.innerHTML = "<option value=''>—</option>";
+    outHint.className = "hint warn";
+    outHint.textContent = r.error.message;
+    return;
+  }
+  outData = r; outFor = ed.value;
+  if (!r.relations.length) {
+    outRel.innerHTML = "<option value=''>—</option>";
+    outCode.textContent = ""; outInsert.disabled = true;
+    outHint.className = "hint warn";
+    outHint.textContent = "this program derives no relation yet — write a rule first";
+    return;
+  }
+  outRel.innerHTML = r.relations.map(rel =>
+    '<option value="' + esc(rel.name) + '">' + esc(rel.name) + "/" + rel.arity +
+    (rel.count === null ? "" : " · " + rel.count) +
+    (rel.output ? " · @output" : "") + "</option>").join("");
+  const fresh = r.relations.find(rel => !rel.output);
+  outRel.value = (fresh || r.relations[0]).name;
+  outPick();
+}
+
+outRel.addEventListener("change", outPick);
+outKind.addEventListener("change", outRender);
+pickerField(outPathEl, outBrowseOpen);
+outBrowse.onclick = outBrowseOpen;
+[outDelim, outHeader, outTyped].forEach(el => el.addEventListener("change", outRender));
+document.getElementById("outCancel").onclick = () => { sinkPop.hidden = true; };
+
+outInsert.onclick = () => {
+  const code = outGenerated(), rel = outCurrent();
+  if (!code) return;
+  sinkPop.hidden = true;
+  const at = ed.selectionStart;
+  const lead = (at === 0 || ed.value[at - 1] === "\n") ? "" : "\n";
+  insert(lead + code + "\n");
+  meta.textContent = "output " + rel.name;
+};
+
+/* ------------------------------------------------------------------ *
+ * Chrome
+ * ------------------------------------------------------------------ */
+
+const POPS = ["help", "settings", "params", "source", "sink"];
+const closePops = () => POPS.forEach(p => document.getElementById(p).hidden = true);
+
+function popover(btn, pop, onOpen) {
+  document.getElementById(btn).onclick = e => {
+    e.stopPropagation();
+    const el = document.getElementById(pop);
+    POPS.forEach(p => { if (p !== pop) document.getElementById(p).hidden = true; });
+    el.hidden = !el.hidden;
+    if (!el.hidden && onOpen) onOpen();
+  };
+  document.getElementById(pop).addEventListener("click", e => e.stopPropagation());
+}
+popover("helpBtn", "help");
+popover("settingsBtn", "settings");
+popover("paramsBtn", "params");
+popover("sourceBtn", "source", () => {
+  if (!srcPath) { srcRender(); srcBrowseOpen(); }
+  else if (srcInfo) { srcPred.value = predicateName(srcInfo.path); srcRender(); }
+});
+popover("sinkBtn", "sink", outAnalyse);
+document.addEventListener("click", closePops);
+
+document.getElementById("theme").onclick = e => {
+  e.stopPropagation();
+  const now = document.documentElement.getAttribute("data-theme");
+  const dark = now ? now === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+};
+
+document.addEventListener("keydown", e => {
+  const mod = e.metaKey || e.ctrlKey;
+  if (e.target === ed || !fdBack.hidden) return;
+  if (mod && e.key === "Enter") { e.preventDefault(); doRun(); }
+  else if (mod && e.shiftKey && e.key.toLowerCase() === "k") { e.preventDefault(); doCheck(); }
+  else if (mod && e.shiftKey && e.key.toLowerCase() === "e") { e.preventDefault(); doExplain(); }
+  else if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); save(); }
+  else if (mod && e.key.toLowerCase() === "o") { e.preventDefault(); openDialog("open"); }
+  else if (e.key === "Escape") closePops();
+});
+
+(function splitter() {
+  const bar = document.getElementById("split");
+  const panel = document.querySelector(".results");
+  let dragging = false;
+  bar.addEventListener("pointerdown", e => { dragging = true; bar.setPointerCapture(e.pointerId); });
+  bar.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    panel.style.height =
+      Math.min(Math.max(window.innerHeight - e.clientY, 60), window.innerHeight - 160) + "px";
+  });
+  bar.addEventListener("pointerup", e => { dragging = false; bar.releasePointerCapture(e.pointerId); });
+})();
+
+if (!/Mac/.test(navigator.platform || "")) {
+  document.getElementById("kRun").textContent = "Ctrl↵";
+}
+
+/* ------------------------------------------------------------------ *
+ * Start
+ * ------------------------------------------------------------------ */
+
+(async function start() {
+  render();
+  const files = await refreshFiles();
+  if (files && files.length) {
+    const preferred = files.find(f => /examples[\\/]/.test(f)) || files[0];
+    await openFile(preferred);
+  } else {
+    ed.value = "% no .vada file found under the served directory\n\nedge(1,2).\nedge(2,3).\npath(X,Y) :- edge(X,Y).\npath(X,Z) :- edge(X,Y), path(Y,Z).\n\n@output(\"path\").\n";
+    markDirty(false); render();
+  }
+  ed.focus();
+})();
+</script>
+</body>
+</html>

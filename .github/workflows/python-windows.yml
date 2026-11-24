@@ -1,0 +1,84 @@
+# Companion to python-app.yml: the same test suite on Windows.
+#
+# The engine is pure standard-library Python, so this job installs nothing but
+# pytest.  Besides the unit tests it checks the three things that are specific
+# to Windows and cannot be observed on the Linux job: running the engine without
+# the POSIX `./vadalog` script, installing the package so that the `vadalog`
+# console script lands on PATH, and writing non-ASCII output to a redirected
+# file, where Windows uses the locale encoding rather than UTF-8.
+#
+# Linting is deliberately not repeated here: flake8 on python-app.yml is
+# platform-independent.
+
+name: Python application (Windows)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+
+    runs-on: windows-latest
+    # A ceiling, so a wedged step fails visibly rather than holding a
+    # runner for the default six hours.
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest and the newest interpreter the project claims to support.
+        python-version: ["3.9", "3.13"]
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+
+    - name: Test with pytest
+      # tests/harness.py puts src/ on sys.path itself, so no install is needed.
+      run: python -m pytest -q
+
+    - name: Run the examples without installing
+      # The POSIX ./vadalog script does not run here; this is the Windows
+      # equivalent documented in the README.
+      env:
+        PYTHONPATH: src
+      run: |
+        Get-ChildItem examples/*.vada | ForEach-Object {
+          Write-Host "== $($_.Name)"
+          python -m vadalog run $_.FullName
+          if ($LASTEXITCODE -ne 0) { throw "$($_.Name) failed with exit code $LASTEXITCODE" }
+        }
+
+    - name: Install the package and run the console script
+      run: |
+        python -m pip install .
+        vadalog run examples/reachability.vada
+        if ($LASTEXITCODE -ne 0) { throw "the vadalog console script failed" }
+
+    - name: Write non-ASCII output to a redirected file
+      # On Windows a redirected stdout uses the locale encoding (cp1252), not
+      # UTF-8, so a program emitting accented strings can fail here even though
+      # it succeeds on Linux and macOS.
+      env:
+        PYTHONPATH: src
+      run: |
+        Set-Content -Encoding utf8 accents.vada '@output("p"). p("città", "naïve").'
+        python -m vadalog run accents.vada > out.txt
+        if ($LASTEXITCODE -ne 0) { throw "non-ASCII output failed with exit code $LASTEXITCODE" }
+        Get-Content out.txt

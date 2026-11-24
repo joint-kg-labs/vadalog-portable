@@ -1,0 +1,5 @@
+parent,child,share
+holdco,acme,0.55
+holdco,borealis,0.08
+fundco,acme,0.30
+fundco,borealis,0.42

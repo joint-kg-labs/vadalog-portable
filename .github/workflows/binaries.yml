@@ -1,0 +1,132 @@
+# Builds the native, single-file executables — one per operating system and
+# architecture — and proves each one works on the machine that built it.
+#
+# `vadalog.pyz` stays the portable artefact and is not touched here: it is one
+# small file that runs anywhere there is a Python.  These binaries are for the
+# machines where there is not one, or where installing one needs a ticket.  A
+# binary is native code: it runs on its own platform and nowhere else, which is
+# why there are five of them.
+#
+# The workflow is reusable.  `release.yml` calls it so that a tag ships the
+# binaries together with the archive, the wheel and the sdist; on its own it
+# can be started by hand, and it runs whenever the packaging surface changes —
+# the builders, the examples that travel inside a build, the workflow itself.
+# Ordinary engine changes are covered by python-app.yml, which is far cheaper
+# than five freezes.
+
+name: Binaries
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "tools/**"
+      - "examples/**"
+      - "pyproject.toml"
+      - ".github/workflows/binaries.yml"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "tools/**"
+      - "examples/**"
+      - "pyproject.toml"
+      - ".github/workflows/binaries.yml"
+
+permissions:
+  contents: read
+
+# A second push supersedes the first: five runners is enough to spend once.
+# Never cancel a run the release is waiting on, though.
+concurrency:
+  group: binaries-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # PyInstaller is a build-time tool only: the engine imports nothing of it and
+  # nothing of it survives into the source tree.  Pinned, so that a release is
+  # never broken by an upstream change nobody here chose.
+  PYINSTALLER_VERSION: "6.22.2"
+  # The interpreter frozen into the binaries.  The recipient's Python, if they
+  # have one at all, has nothing to do with it.
+  PYTHON_VERSION: "3.12"
+
+jobs:
+
+  build:
+
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    # Freezing takes two or three minutes; a ceiling means a wedged step fails
+    # visibly rather than holding a runner for the default six hours.
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Ubuntu 22.04 rather than a newer one on purpose: a binary carries
+          # its own Python but still links the system glibc, and one built
+          # against an older glibc runs on newer distributions while the
+          # reverse does not.  (Deprecation began 17 September 2026; it is
+          # supported until 17 April 2027, when 24.04 takes over here.)
+          - { os: ubuntu-22.04,  name: vadalog-linux-x86_64 }
+          - { os: ubuntu-22.04-arm, name: vadalog-linux-arm64 }
+          # Intel macOS: `macos-13` was retired on 4 December 2025 and
+          # `macos-14-large` is deprecated, so `macos-15-intel` is the Intel
+          # image left.  GitHub drops x86_64 macOS altogether in autumn 2027.
+          - { os: macos-15-intel, name: vadalog-macos-x86_64 }
+          # Apple silicon: `macos-14` is deprecated and goes on 2 November
+          # 2026; 15 is the oldest arm64 image that is not on the way out.
+          - { os: macos-15,      name: vadalog-macos-arm64 }
+          - { os: windows-2022,  name: vadalog-windows-x86_64.exe }
+
+    # One shell on all five runners, Windows included: the steps below are the
+    # same commands everywhere, and Git Bash keeps them that way.
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install PyInstaller
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install "pyinstaller==${PYINSTALLER_VERSION}"
+
+    - name: Build ${{ matrix.name }}
+      # Ubuntu 22.04 rather than the newest: the binary carries its own Python
+      # but still links the system glibc, and a binary built against an older
+      # glibc runs on newer distributions while the reverse does not.
+      run: python tools/build_binary.py -o "dist/${{ matrix.name }}"
+
+    - name: What was built
+      # Informational, and the quickest way to see an unexpected architecture
+      # or a universal binary in the log.
+      if: runner.os != 'Windows'
+      run: |
+        file "dist/${{ matrix.name }}"
+        ls -l "dist/${{ matrix.name }}"
+
+    - name: Run it the way a recipient does
+      # The same suite the archive goes through, on the same five platforms:
+      # every example, the bundled examples extracted and run, `check` and
+      # `explain`, the documented exit codes, accented output to a redirected
+      # file, and the web UI answering over HTTP.
+      timeout-minutes: 10
+      run: python tools/smoke.py --port 8899 -- "dist/${{ matrix.name }}"
+
+    - name: Upload ${{ matrix.name }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: binary-${{ matrix.name }}
+        path: dist/${{ matrix.name }}
+        if-no-files-found: error
+        retention-days: 14

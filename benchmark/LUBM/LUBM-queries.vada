@@ -1,0 +1,74 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "LUBM" - the fourteen benchmark queries on the chased instance.
+% Transcribed from chasebench/scenarios/LUBM/queries/.
+%
+%   python3 ../../dist/vadalog.pyz run LUBM-queries.vada --format csv --out out-queries
+%
+% The queries are ordinary non-recursive rules in a stratum above the target
+% predicates, so they see the instance only once the chase has closed it.
+% Constants such as Department0-University0 are written as quoted strings.
+% ---------------------------------------------------------------------------
+@include("inputs-001.vada").
+@include("rules.vada").
+
+q01(X) :- takesCourse(X, "Department0-University0-GraduateCourse0"), graduateStudent(X).
+q02(X, Y, Z) :-
+    memberOf(X, Z),
+    subOrganizationOf(Z, Y),
+    undergraduateDegreeFrom(X, Y),
+    graduateStudent(X),
+    university(Y),
+    department(Z).
+q03(X) :-
+    publicationAuthor(X, "Department0-University0-AssistantProfessor0"),
+    publication(X).
+q04(X, Y1, Y2, Y3) :-
+    worksFor(X, "Department0-University0"),
+    name(X, Y1),
+    emailAddress(X, Y2),
+    telephone(X, Y3),
+    professor(X).
+q05(X) :- memberOf(X, "Department0-University0"), person(X).
+q06(X) :- student(X).
+q07(X, Y) :-
+    teacherOf("Department0-University0-AssociateProfessor0", Y),
+    takesCourse(X, Y),
+    student(X),
+    course(Y).
+q08(X, Y, Z) :-
+    subOrganizationOf(Y, "University0"),
+    memberOf(X, Y),
+    emailAddress(X, Z),
+    student(X),
+    department(Y).
+q09(X, Y, Z) :-
+    advisor(X, Y),
+    teacherOf(Y, Z),
+    takesCourse(X, Z),
+    student(X),
+    faculty(Y),
+    course(Z).
+q10(X) :- takesCourse(X, "Department0-University0-GraduateCourse0"), student(X).
+q11(X) :- subOrganizationOf(X, "University0"), researchGroup(X).
+q12(X, Y) :-
+    subOrganizationOf(Y, "University0"),
+    worksFor(X, Y),
+    chair(X),
+    department(Y).
+q13(X) :- hasAlumnus("University0", X), person(X).
+q14(X) :- undergraduateStudent(X).
+
+@output("q01").
+@output("q02").
+@output("q03").
+@output("q04").
+@output("q05").
+@output("q06").
+@output("q07").
+@output("q08").
+@output("q09").
+@output("q10").
+@output("q11").
+@output("q12").
+@output("q13").
+@output("q14").

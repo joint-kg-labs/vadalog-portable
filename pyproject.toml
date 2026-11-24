@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vadalog-portable"
+# The version lives in one place, src/vadalog/__init__.py, and is read from
+# there; the release workflow checks that a tag matches it.
+dynamic = ["version"]
+description = "A small, portable Datalog+/- (Vadalog) reasoner. Pure standard library."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Luigi Bellomarini" }]
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+vadalog = "vadalog.cli:main"
+
+# The web UI and the toy examples ship inside the package, so that an
+# installed wheel and a single-file build (`make pyz`) both carry them.  The
+# examples stay at the top level of the repository, where `./vadalog run
+# examples/...` and the CI find them, and are mapped into the package here.
+[tool.setuptools]
+packages = ["vadalog", "vadalog.ui", "vadalog.examples"]
+# Off, or setuptools sweeps the whole of `examples/` into the wheel, scratch
+# files included; `package-data` below says exactly what ships.
+include-package-data = false
+
+[tool.setuptools.dynamic]
+version = { attr = "vadalog.__version__" }
+
+[tool.setuptools.package-dir]
+"" = "src"
+"vadalog.examples" = "examples"
+
+[tool.setuptools.package-data]
+"vadalog.ui" = ["index.html", "README.md"]
+# Listed one by one, not globbed: `examples/` also holds the CSV that
+# csv_pipeline.vada writes when it is run, which does not belong in a release.
+# This list is the one in `examples/__init__.py`; tests/test_pyz.py checks it.
+"vadalog.examples" = [
+    "reachability.vada", "existentials.vada", "components.vada",
+    "aggregation.vada", "company_control.vada", "csv_pipeline.vada",
+    "holdings.csv",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

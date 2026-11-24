@@ -1,0 +1,14 @@
+% ---------------------------------------------------------------------------
+% ChaseBench "doctors" - 100k instance.
+%
+%   python3 vadalog.pyz run doctors-100k.vada                       % facts to stdout
+%   python3 vadalog.pyz run doctors-100k.vada --format csv --out out
+%
+% Run from this directory: the @bind paths are relative to the program file.
+% ---------------------------------------------------------------------------
+@include("inputs-100k.vada").
+@include("rules.vada").
+
+@output("doctor").
+@output("prescription").
+@output("targethospital").
